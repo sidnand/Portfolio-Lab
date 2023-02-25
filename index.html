@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testing Portfolio Optimization Methods</title>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
+    <link rel="stylesheet" type="text/css" href="./src/main.css" />
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+
+    <script defer src="https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js"></script>
+    <script defer src="./src/libs/pyscript.js"></script>
+    
+    <py-config>
+        packages = ["./src/libs/quadprog-0.1.11-cp310-cp310-emscripten_3_1_27_wasm32.whl",
+        "./src/libs/portfoliotest-1.0.0-py3-none-any.whl"]
+    
+        [[fetch]]
+        files = ["./data/new/processed/25_portfolios_1_factor.csv",
+        "./data/new/processed/25_portfolios_3_factor.csv",
+        "./data/new/processed/25_portfolios_4_factor.csv",
+        "./data/new/processed/ff_4_factor.csv",
+        "./data/new/processed/industry.csv",
+        "./data/new/processed/international_factor.csv",
+        "./data/new/processed/sp_sector.csv"]
+    </py-config>
+    
+    <py-script src="./main.py"></py-script>
+
+</head>
+
+<body>
+
+    <div id="loader">
+        <span class="loader"></span>
+    </div>
+
+    <div id="container" style="opacity: 0.2;">
+        <!-- <div id="container"> -->
+
+        <div id="menu">
+            <form onsubmit="return false">
+                <fieldset class="form_group" id="load_data">
+                    <div id="presets">
+                        <label class="form_header">Load</label>
+                        <button onclick='loadClick("spsector")'>S&P 500 Sectors</button>
+                        <button onclick='loadClick("industry")'>Industry</button>
+                        <button onclick='loadClick("international")'>International</button>
+                        <button onclick='loadClick("25_1")'>25 Portfolios (1 Factor)</button>
+                        <!-- <button onclick='loadClick("./data/new/processed/international_factor.csv")'>25 Portfolios (3 Factor)</button> -->
+                        <!-- <button onclick='loadClick("")'>25 Portfolios (4 Factor)</button> -->
+                        <button onclick='loadClick("ff4")'>4 Factor</button>
+                    </div>
+
+                    <div id="load_or" class="form_header">Or</div>
+
+                    <div id="upload">
+                        <label class="form_header">Upload</label>
+                        <input class="file_upload" type="file" name="file" id="file" />
+
+                        <button>Click to Upload</button>
+                    </div>
+                </fieldset>
+        
+                <!-- <fieldset class="form_group" id="delim_type">
+                    <label class="form_header" for="">Delim Type</label>
+                    <input type="radio" name="delim" value="comma">Comma</input>
+                    <input type="radio" name="delim" value="space-tab">Space/Tab</input>
+                </fieldset>
+        
+                <fieldset class="form_group">
+                    <label class="form_header" for="">Data Options</label>
+                    <div id="data_options">
+                        <input type="checkbox" name="format" value="log-scale">Log-Scale</input>
+                        <input type="checkbox" name="format" value="date">Data Includes Date Column (Date Column Must Be First)</input>
+                        <input type="text" placeholder="ex: 0, 1">Risk Factor Column Position (0 Indexed, Multiple Positions)</input>
+                        <input type="text" placeholder="ex: 1">Risk Free Asset Column Position (0 Indexed, Only 1)</input>
+                    </div>
+                </fieldset>
+        
+                <fieldset class="form_group">
+                    <label class="form_header" for="">Model Properties</label>
+                    <label for="">Time Horizons: </label> <input type="text" placeholder="ex: 60, 120">
+                    <label for="">Gamma values: </label> <input type="text" id="gammas" placeholder="ex: 1, 2, 3">
+                </fieldset>
+        
+                <fieldset class="form_group">
+                    <label class="form_header" for="">Select Models</label>
+        
+                    <input type="checkbox">Equal Weighted</input> <a href="">Learn More</a>
+                    <input type="checkbox">Minimum-Variance</input> <a href="">Learn More</a>
+                    <input type="checkbox">Minimum-Varaince Shortsale Constraints</input> <a href="">Learn More</a>
+                    <input type="checkbox">Minimum-Varaince Generalized Constraints (Jagannathan Ma)</input> <a href="">Learn
+                        More</a>
+                    <input type="checkbox">Kan Zhou Equal Weighted</input> <a href="">Learn More</a>
+                    <input type="checkbox">Mean-Varaince (Markowitz)</input> <a href="">Learn More</a>
+                    <input type="checkbox">Mean-Variance Shortsale</input> <a href="">Learn More</a>
+                    <input type="checkbox">Kan Zhou (2007) "three-fund"</input> <a href="">Learn More</a>
+                    <input type="checkbox">Bayes-Stein</input> <a href="">Learn More</a>
+                    <input type="checkbox">Bayes-Stein Shortsale</input> <a href="">Learn More</a>
+                    <input type="checkbox">MacKinlay and Pastor’s (2000)</input> <a href="">Learn More</a>
+                </fieldset> -->
+        
+                </fieldset class="form_group">
+                    <!-- <button>Run</button> -->
+                    <button id="export" style="display: none;" onclick="tableToCSV()">Export CSV</button>
+                </fieldset>
+            </form> <!-- form -->
+        
+        </div> <!-- menu -->
+        
+        <div id="results">
+            <table></table>
+        </div> <!-- results -->
+
+    </div> <!-- container -->
+
+    <script defer src="./src/main.js"></script>
+
+    <script>
+        let loading = (showLoading) => {
+            if (showLoading) {
+                document.getElementById("loader").style.display = "block";
+                document.getElementById("container").style.opacity = "0.2";
+            } else {
+                document.getElementById("loader").style.display = "none";
+                document.getElementById("container").style.opacity = "1";
+            }
+        }
+    </script>
+
+    <script defer>
+        function createObject(object, variableName) {
+            //Bind a variable whose name is the string variableName
+            // to the object called 'object'
+            let execString = variableName + " = object"
+            console.log("Running '" + execString + "'");
+            eval(execString)
+
+            loading(false);
+            
+        }
+    </script>
+
+</body>
+
+</html>

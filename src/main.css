@@ -1,0 +1,212 @@
+* {
+    margin: 0;
+    padding: 0;
+    transition: all 200ms ease-in-out;
+    font-family: Open Sans;
+    color: #fff;
+    border: none;
+    outline: none;
+    background: none;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #333;
+}
+
+#container {
+    margin: 10px auto;
+    width: 90%;
+    justify-content: center;
+    align-items: center;
+}
+
+*::selection {
+    background-color: #fff59d;
+    color: #333;
+}
+
+#loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+label {
+    vertical-align: middle;
+}
+
+input[type="text"], button {
+    border: 2px solid #fff;
+    border-radius: 5px;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+input[type="radio"] {
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: #fff;
+    margin-left: 10px;
+    margin-right: 10px;
+    border-radius: 15px;
+    height: 15px;
+    width: 15px;
+    cursor: pointer;
+    vertical-align: baseline;
+}
+
+/* On mouse-over, add a grey background color */
+input[type="radio"]:hover {
+    background-color: #fff59d;
+    border-color: #fff59d;
+    transform: scale(1.1);
+}
+
+input[type="radio"]:checked {
+    background-color: #fff59d;
+    border-color: #fff59d;
+}
+
+input[type="text"] {
+    padding: 10px;
+}
+
+button {
+    padding: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #fff59d;
+    border-color: #fff59d;
+    transform: scale(1.1);
+    color: #333;
+}
+
+.form_group {
+    padding: 10px;
+}
+
+.form_header {
+    font-size: 20px;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+#load_or {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+    font-size: 15px;
+}
+
+#data_options input {
+    display: inline-block;
+}
+
+/* TABLE */
+
+table {
+    border-spacing: 1;
+    border-collapse: collapse;
+    background: #444;
+    color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+table td,
+table th {
+    padding: 10px;
+}
+
+table th {
+    height: 60px;
+    background: #000;
+    font-size: 16px;
+}
+
+table tbody tr {
+    height: 48px;
+    border-bottom: 1px solid #E3F1D5;
+}
+
+table tbody tr:last-child {
+    border: 0;
+}
+
+table td,
+table th {
+    text-align: left;
+}
+
+table td.l,
+table th.l {
+    text-align: left;
+}
+
+table td.c,
+table th.c {
+    text-align: center;
+}
+
+table td.r,
+table th.r {
+    text-align: right;
+}
+
+/* LOADER */
+
+.loader {
+    width: 48px;
+    height: 48px;
+    display: block;
+    margin: 15px auto;
+    position: relative;
+    color: #FFF;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+.loader::after,
+.loader::before {
+    content: '';
+    box-sizing: border-box;
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    top: 50%;
+    left: 50%;
+    transform: scale(0.5) translate(0, 0);
+    background-color: #FFF;
+    border-radius: 50%;
+    animation: animloader 1s infinite ease-in-out;
+}
+
+.loader::before {
+    background-color: #fff59d;
+    transform: scale(0.5) translate(-48px, -48px);
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes animloader {
+    50% {
+        transform: scale(1) translate(-50%, -50%);
+    }
+}
