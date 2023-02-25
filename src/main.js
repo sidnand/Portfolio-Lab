@@ -39,13 +39,13 @@ function run(presentName) {
         }
     }
 
-    toggle(exportButton)
+    show(exportButton, true)
     showResults(gammas, data)
     loading(false);
 }
 
-function toggle(element) {
-    if (element.style.display === "none") {
+function show(element, show) {
+    if (show) {
         element.style.display = "block";
     } else {
         element.style.display = "none";
@@ -58,7 +58,7 @@ let showResults = (gammas, data) => {
     table.innerHTML = ""
 
     // create header row
-    let headerRow = `<tr><th class="c">Models</th>`
+    let headerRow = `<tr><th class="c">Models &darr; | Gammas &rarr;</th>`
 
     for (let i = 0; i < gammas.length; i++) {
         let gammaHeader = `<th class="c">${gammas[i]}</th>`
