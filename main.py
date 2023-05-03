@@ -4,6 +4,7 @@ from pyodide.ffi import create_proxy
 import numpy as np
 
 from portfoliotest import *
+# from portfolio_performance import *
 
 # app = App(PATH_OLD_SPSECTOR, GAMMAS, OMEGAS, TIME_HORIZON, models,
 #           delim="\s+", date=True, riskFactorPositions=[0])
@@ -107,7 +108,7 @@ presents = {
         "models": models,
         "riskFactorPositions": [0],
         "riskFreePosition": -1,
-        "date": True    
+        "date": True
     },
 
     "25_1": {
