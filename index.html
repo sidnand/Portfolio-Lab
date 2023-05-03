@@ -9,15 +9,16 @@
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
     <link rel="stylesheet" type="text/css" href="./src/main.css" />
-    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <link rel="stylesheet" href="./src/libs/css/pyscript_2022.12.1.css" />
 
-    <script defer src="https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js"></script>
-    <script defer src="./src/libs/pyscript.js"></script>
-    
+    <script defer src="./src/libs/js/pyodide_0.22.1.js"></script>
+    <script defer src="./src/libs/js/pyscript_2022.12.1.js"></script>
+
     <py-config>
-        packages = ["./src/libs/quadprog-0.1.11-cp310-cp310-emscripten_3_1_27_wasm32.whl",
-        "./src/libs/portfoliotest-1.0.0-py3-none-any.whl"]
-    
+        packages = ["qpsolvers==2.8.1",
+        "./src/libs/wheels/quadprog-0.1.11-cp310-cp310-emscripten_3_1_27_wasm32.whl",
+        "./src/libs/wheels/portfoliotest-1.0.0-py3-none-any.whl"]
+
         [[fetch]]
         files = ["./data/new/processed/25_portfolios_1_factor.csv",
         "./data/new/processed/25_portfolios_3_factor.csv",

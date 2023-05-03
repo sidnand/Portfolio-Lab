@@ -2,6 +2,7 @@ from typing import Dict, List
 import js
 from pyodide.ffi import create_proxy
 import numpy as np
+
 from portfoliotest import *
 
 # app = App(PATH_OLD_SPSECTOR, GAMMAS, OMEGAS, TIME_HORIZON, models,
