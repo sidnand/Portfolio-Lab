@@ -1,22 +1,8 @@
 from typing import Dict, List
 import js
-from pyodide.ffi import create_proxy
 import numpy as np
-
-from portfoliotest import *
-# from portfolio_performance import *
-
-# app = App(PATH_OLD_SPSECTOR, GAMMAS, OMEGAS, TIME_HORIZON, models,
-#           delim="\s+", date=True, riskFactorPositions=[0])
-# app = App(PATH_OLD_INDUSTRY, GAMMAS, OMEGAS, TIME_HORIZON, models,
-#           delim="\s+", date=True, riskFactorPositions=[0])
-# app = App(PATH_OLD_Mkt_SMB_HML, GAMMAS, OMEGAS, TIME_HORIZON, models,
-#           delim="\s+", date=True, riskFactorPositions=[-1])
-
-
-PATH_OLD_SPSECTOR = "./data/old/SPSectors.txt"
-PATH_OLD_INDUSTRY = "./data/old/Industry_noFactors.txt"
-PATH_OLD_Mkt_SMB_HML = "./data/old/F-F_Research_Data_Factors.txt"
+from pyodide.ffi import create_proxy
+from portfolioperformance import *
 
 PATH_SPSECTOR = "./data/new/processed/sp_sector.csv"
 PATH_INDUSTRY = "./data/new/processed/industry.csv"
@@ -30,8 +16,6 @@ PATH_FF4 = "./data/new/processed/25_portfolios_4_factor.csv"
 
 # Risk averse levels
 GAMMAS = [1, 2, 3, 4, 5, 10]
-
-OMEGAS = []
 
 # Time horizons
 TIME_HORIZON = [60, 120]
@@ -70,64 +54,54 @@ presents = {
     "spsector": {
         "path": PATH_SPSECTOR,
         "gammas": GAMMAS,
-        "omegas": OMEGAS,
         "timeHorizon": TIME_HORIZON,
         "models": models,
-        "riskFactorPositions": [-1],
+        "riskFactorPositions": [6],
         "riskFreePosition": 0,
-        "date": False
     },
 
     "industry": {
         "path": PATH_INDUSTRY,
         "gammas": GAMMAS,
-        "omegas": OMEGAS,
         "timeHorizon": TIME_HORIZON,
         "models": models,
         "riskFactorPositions": [-1],
         "riskFreePosition": 0,
-        "date": True
     },
 
     "international": {
         "path": PATH_INTERNATIONAL,
         "gammas": GAMMAS,
-        "omegas": OMEGAS,
         "timeHorizon": TIME_HORIZON,
         "models": models,
         "riskFactorPositions": [-1],
         "riskFreePosition": 0,
-        "date": True
     },
 
     "ff4": {
         "path": PATH_Mkt_SMB_HML,
         "gammas": GAMMAS,
-        "omegas": OMEGAS,
         "timeHorizon": TIME_HORIZON,
         "models": models,
         "riskFactorPositions": [0],
         "riskFreePosition": -1,
-        "date": True
     },
 
     "25_1": {
         "path": PATH_FF1,
         "gammas": GAMMAS,
-        "omegas": OMEGAS,
         "timeHorizon": TIME_HORIZON,
         "models": models,
         "riskFactorPositions": [-1],
         "riskFreePosition": 0,
-        "date": True
     }
 }
 
 def runPresent(presentName):
     present = presents[presentName]
 
-    app = App(present["path"], present["gammas"], present["omegas"], present["timeHorizon"], present["models"],
-              date=present["date"], riskFactorPositions=present["riskFactorPositions"], riskFreePosition=present["riskFreePosition"])
+    app = App(present["path"], present["gammas"], present["timeHorizon"], present["models"],
+              riskFactorPositions=present["riskFactorPositions"], riskFreePosition=present["riskFreePosition"])
     
     sr_dict = app.getSharpeRatios()
     sig_dict = app.getStatisticalSignificanceWRTBenchmark(benchmark)
