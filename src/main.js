@@ -1,4 +1,5 @@
-let exportButton = document.getElementById('export')
+let tableSharpes = document.getElementById('table_sharpes')
+let tableSignifs = document.getElementById('table_signifs')
 
 function loadClick(x) {
     loading(true)
@@ -39,7 +40,6 @@ function run(presentName) {
         }
     }
 
-    show(exportButton, true)
     showResults(gammas, data)
     loading(false);
 }
@@ -53,9 +53,14 @@ function show(element, show) {
 }
 
 let showResults = (gammas, data) => {
-    // get table from inside #results div
-    let table = document.getElementById('results').children[0]
-    table.innerHTML = ""
+    tableSharpes.innerHTML = ""
+    tableSignifs.innerHTML = ""
+
+    let captionSharpe = `<caption>Sharpe Ratios</caption>`
+    let captionSignif = `<caption>P-Values</caption>`
+
+    tableSharpes.innerHTML += captionSharpe
+    tableSignifs.innerHTML += captionSignif
 
     // create header row
     let headerRow = `<tr><th class="c">Models &darr; | Gammas &rarr;</th>`
@@ -68,36 +73,50 @@ let showResults = (gammas, data) => {
     headerRow += "</tr>"
 
     // add header row to table
-    table.innerHTML += headerRow
+    tableSharpes.innerHTML += headerRow
+    tableSignifs.innerHTML += headerRow
 
     // create data rows
     for (let key in data) {
-        let row = `<tr><td class="l">${data[key]['name']}</td>`
+        let rowSharpe = `<tr><td class="l">${data[key]['name']}</td>`
+        let rowSignif = `<tr><td class="l">${data[key]['name']}</td>`
 
         for (let i = 0; i < data[key]['src'].length; i++) {
             let src = data[key]['src'][i].toFixed(3)
             let sig = data[key]['sig'][i].toFixed(3)
 
-            let cell = `<td class="c">${src} (${sig})</td>`
-            row += cell
+            rowSharpe += `<td class="c">${src}</td>`
+            rowSignif += `<td class="c">${sig}</td>`
         }
 
-        row += "</tr>"
-        // add row to table
-        table.innerHTML += row
+        rowSharpe += "</tr>"
+        rowSignif += "</tr>"
+
+        // add data rows to table
+        tableSharpes.innerHTML += rowSharpe
+        tableSignifs.innerHTML += rowSignif
     }
+
+    // add button to export table to csv at the bottom of the table
+    tableSharpes.innerHTML += `<tr><td colspan="${gammas.length + 1}"><button onclick="tableToCSV('sharpe')">Download</button></td></tr>`
+    tableSignifs.innerHTML += `<tr><td colspan="${gammas.length + 1}"><button onclick="tableToCSV('signif')">Download</button></td></tr>`
 }
 
 // The below code is from: https://www.geeksforgeeks.org/how-to-export-html-table-to-csv-using-javascript/
 
-function tableToCSV() {
+function tableToCSV(tableName) {
+
+    let table;
 
     // Variable to store the final csv data
     var csv_data = [];
 
-    // Get each row data
-    var rows = document.getElementsByTagName('tr');
-    for (var i = 0; i < rows.length; i++) {
+    if (tableName == "sharpe") table = document.getElementById('table_sharpes');
+    if (tableName == "signif") table = document.getElementById('table_signifs');
+
+    // Get each row data, except the last row
+    let rows = table.querySelectorAll('tr');
+    for (var i = 0; i < rows.length - 1; i++) {
 
         // Get each column data
         var cols = rows[i].querySelectorAll('td,th');

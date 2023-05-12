@@ -9,15 +9,18 @@
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
     <link rel="stylesheet" type="text/css" href="./src/main.css" />
-    <link rel="stylesheet" href="./src/libs/css/pyscript_2022.12.1.css" />
+    <!-- <link rel="stylesheet" href="./src/libs/css/pyscript_2022.12.1.css" /> -->
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
 
-    <script defer src="./src/libs/js/pyodide_0.22.1.js"></script>
-    <script defer src="./src/libs/js/pyscript_2022.12.1.js"></script>
+    <!-- packages = ["qpsolvers==2.8.1",
+        "./src/libs/wheels/quadprog-0.1.11-cp310-cp310-emscripten_3_1_27_wasm32.whl",
+        "./src/libs/wheels/portfolioperformance-1.0.0-py3-none-any.whl"] -->
 
     <py-config>
         packages = ["qpsolvers==2.8.1",
+        "pandas",
         "./src/libs/wheels/quadprog-0.1.11-cp310-cp310-emscripten_3_1_27_wasm32.whl",
-        "./src/libs/wheels/portfoliotest-1.0.0-py3-none-any.whl"]
+        "./src/libs/wheels/portfolioperformance-1.0.0-py3-none-any.whl"]
 
         [[fetch]]
         files = ["./data/new/processed/25_portfolios_1_factor.csv",
@@ -28,8 +31,6 @@
         "./data/new/processed/international_factor.csv",
         "./data/new/processed/sp_sector.csv"]
     </py-config>
-    
-    <py-script src="./main.py"></py-script>
 
 </head>
 
@@ -40,7 +41,15 @@
     </div>
 
     <div id="container" style="opacity: 0.2;">
-        <!-- <div id="container"> -->
+
+        <div id="header">
+            <h1>Testing Portfolio Optimization Methods</h1>
+            <div>
+                <a href="https://github.com/sidnand/Portfolio-Optimization-Interface" target="_blank">GitHub</a>
+                <a href="" target="_blank">Package</a>
+                <a href="help.html" target="_blank">Help</a>
+            </div>
+        </div>
 
         <div id="menu">
             <form onsubmit="return false">
@@ -51,8 +60,8 @@
                         <button onclick='loadClick("industry")'>Industry</button>
                         <button onclick='loadClick("international")'>International</button>
                         <button onclick='loadClick("25_1")'>25 Portfolios (1 Factor)</button>
-                        <!-- <button onclick='loadClick("./data/new/processed/international_factor.csv")'>25 Portfolios (3 Factor)</button> -->
-                        <!-- <button onclick='loadClick("")'>25 Portfolios (4 Factor)</button> -->
+                        <button onclick='loadClick("25_3")'>25 Portfolios (3 Factor)</button>
+                        <button onclick='loadClick("25_4")'>25 Portfolios (4 Factor)</button>
                         <button onclick='loadClick("ff4")'>4 Factor</button>
                     </div>
 
@@ -66,7 +75,7 @@
                     </div>
                 </fieldset>
         
-                <!-- <fieldset class="form_group" id="delim_type">
+                <fieldset class="form_group" id="delim_type">
                     <label class="form_header" for="">Delim Type</label>
                     <input type="radio" name="delim" value="comma">Comma</input>
                     <input type="radio" name="delim" value="space-tab">Space/Tab</input>
@@ -76,16 +85,22 @@
                     <label class="form_header" for="">Data Options</label>
                     <div id="data_options">
                         <input type="checkbox" name="format" value="log-scale">Log-Scale</input>
-                        <input type="checkbox" name="format" value="date">Data Includes Date Column (Date Column Must Be First)</input>
-                        <input type="text" placeholder="ex: 0, 1">Risk Factor Column Position (0 Indexed, Multiple Positions)</input>
-                        <input type="text" placeholder="ex: 1">Risk Free Asset Column Position (0 Indexed, Only 1)</input>
+                        <input type="text" placeholder="ex: YYYYMMDD">Date Format</input>
+                        <input type="text" placeholder="Default: None">Risk Factor Column Position (0 Indexed, Multiple Positions)</input>
+                        <input type="text" placeholder="Default: 0">Risk Free Asset Column Position (0 Indexed, Only 1 Position)</input>
                     </div>
                 </fieldset>
         
                 <fieldset class="form_group">
                     <label class="form_header" for="">Model Properties</label>
                     <label for="">Time Horizons: </label> <input type="text" placeholder="ex: 60, 120">
-                    <label for="">Gamma values: </label> <input type="text" id="gammas" placeholder="ex: 1, 2, 3">
+                    <label for="">Gamma Values: </label> <input type="text" id="gammas" placeholder="ex: 1, 2, 3">
+                </fieldset>
+
+                <fieldset class="form_group">
+                    <label class="form_header" for="">Date Range</label>
+                    <label for="">From: <input type="text"></label>
+                    <label for="">To: <input type="text"></label>
                 </fieldset>
         
                 <fieldset class="form_group">
@@ -103,21 +118,27 @@
                     <input type="checkbox">Bayes-Stein</input> <a href="">Learn More</a>
                     <input type="checkbox">Bayes-Stein Shortsale</input> <a href="">Learn More</a>
                     <input type="checkbox">MacKinlay and Pastor’s (2000)</input> <a href="">Learn More</a>
-                </fieldset> -->
+                </fieldset>
         
                 </fieldset class="form_group">
-                    <!-- <button>Run</button> -->
-                    <button id="export" style="display: none;" onclick="tableToCSV()">Export CSV</button>
+                    <button>Run</button>
                 </fieldset>
             </form> <!-- form -->
         
         </div> <!-- menu -->
         
         <div id="results">
-            <table></table>
+            <table id="table_sharpes"></table>
+            <table id="table_signifs" style="margin-top: 50px;"></table>
         </div> <!-- results -->
 
     </div> <!-- container -->
+
+    <script defer src="./src/libs/js/pyodide_0.22.1.js"></script>
+    <!-- <script defer src="./src/libs/js/pyscript_2022.12.1.js"></script> -->
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+
+    <py-script src="./main.py"></py-script>
 
     <script defer src="./src/main.js"></script>
 
@@ -142,7 +163,6 @@
             eval(execString)
 
             loading(false);
-            
         }
     </script>
 
