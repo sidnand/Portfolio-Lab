@@ -1,3 +1,4 @@
+import json
 from typing import Dict, List
 import js
 import numpy as np
@@ -107,6 +108,13 @@ def runPresent(presentName):
     sig_dict = app.getStatisticalSignificanceWRTBenchmark(benchmark)
 
     return [present["gammas"], format(sr_dict, sig_dict)]
+
+def runModel(dataJson):
+    data = json.loads(dataJson)
+
+    # loop through json and print key and value
+    for key in data:
+        print(key, data[key])
     
 
 def format(sr_dict, sig_dict):
