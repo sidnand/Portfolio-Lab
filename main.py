@@ -1,22 +1,8 @@
-from typing import Dict, List
+import json
 import js
-from pyodide.ffi import create_proxy
 import numpy as np
-
-from portfoliotest import *
-# from portfolio_performance import *
-
-# app = App(PATH_OLD_SPSECTOR, GAMMAS, OMEGAS, TIME_HORIZON, models,
-#           delim="\s+", date=True, riskFactorPositions=[0])
-# app = App(PATH_OLD_INDUSTRY, GAMMAS, OMEGAS, TIME_HORIZON, models,
-#           delim="\s+", date=True, riskFactorPositions=[0])
-# app = App(PATH_OLD_Mkt_SMB_HML, GAMMAS, OMEGAS, TIME_HORIZON, models,
-#           delim="\s+", date=True, riskFactorPositions=[-1])
-
-
-PATH_OLD_SPSECTOR = "./data/old/SPSectors.txt"
-PATH_OLD_INDUSTRY = "./data/old/Industry_noFactors.txt"
-PATH_OLD_Mkt_SMB_HML = "./data/old/F-F_Research_Data_Factors.txt"
+from pyodide.ffi import create_proxy
+from portfolioperformance import *
 
 PATH_SPSECTOR = "./data/new/processed/sp_sector.csv"
 PATH_INDUSTRY = "./data/new/processed/industry.csv"
@@ -26,125 +12,77 @@ PATH_FF1 = "./data/new/processed/25_portfolios_1_factor.csv"
 PATH_FF3 = "./data/new/processed/25_portfolios_3_factor.csv"
 PATH_FF4 = "./data/new/processed/25_portfolios_4_factor.csv"
 
-# MODEL CONSTANTS
-
-# Risk averse levels
-GAMMAS = [1, 2, 3, 4, 5, 10]
-
-OMEGAS = []
-
-# Time horizons
-TIME_HORIZON = [60, 120]
-
 benchmark = EqualWeight("Equal Weight")
-minVar = MinVar("Minimum Variance")
-JagannathanMa = JagannathanMa("Jagannathan Ma")
-minVarShortSellCon = MinVarShortSellCon(
-    "Minimum Variance with Short Sell Constraints")
-kanZhouEw = KanZhouEw("Kan Zhou EW")
-
-meanVar = MeanVar("Mean Variance (Markowitz)")
-meanVarShortSellCon = MeanVarShortSellCon(
-    "Mean Variance with Short Sell Constraints")
-kanZhou = KanZhou("Kan Zhou Three Fund")
-bayesStein = BayesStein("Bayes Stein")
-bayesSteinShortSellCon = BayesSteinShortSellCon(
-    "Bayes Stein with Short Sell Constraints")
-macKinlayPastor = MacKinlayPastor("MacKinlay and Pastor")
 
 models = [
     benchmark,
-    minVar,
-    JagannathanMa,
-    minVarShortSellCon,
-    kanZhouEw,
-    meanVar,
-    meanVarShortSellCon,
-    kanZhou,
-    bayesStein,
-    bayesSteinShortSellCon,
-    macKinlayPastor
+    MinVar("Minimum Variance"),
+    JagannathanMa("Jagannathan Ma"),
+    MinVarShortSellCon("Minimum Variance with Short Sell Constraints"),
+    KanZhouEw("Kan Zhou EW"),
+    MeanVar("Mean Variance (Markowitz)"),
+    MeanVarShortSellCon("Mean Variance with Short Sell Constraints"),
+    KanZhou("Kan Zhou Three Fund"),
+    BayesStein("Bayes Stein"),
+    BayesSteinShortSellCon("Bayes Stein with Short Sell Constraints"),
+    MacKinlayPastor("MacKinlay and Pastor")
 ]
 
-presents = {
-    "spsector": {
-        "path": PATH_SPSECTOR,
-        "gammas": GAMMAS,
-        "omegas": OMEGAS,
-        "timeHorizon": TIME_HORIZON,
-        "models": models,
-        "riskFactorPositions": [-1],
-        "riskFreePosition": 0,
-        "date": False
-    },
-
-    "industry": {
-        "path": PATH_INDUSTRY,
-        "gammas": GAMMAS,
-        "omegas": OMEGAS,
-        "timeHorizon": TIME_HORIZON,
-        "models": models,
-        "riskFactorPositions": [-1],
-        "riskFreePosition": 0,
-        "date": True
-    },
-
-    "international": {
-        "path": PATH_INTERNATIONAL,
-        "gammas": GAMMAS,
-        "omegas": OMEGAS,
-        "timeHorizon": TIME_HORIZON,
-        "models": models,
-        "riskFactorPositions": [-1],
-        "riskFreePosition": 0,
-        "date": True
-    },
-
-    "ff4": {
-        "path": PATH_Mkt_SMB_HML,
-        "gammas": GAMMAS,
-        "omegas": OMEGAS,
-        "timeHorizon": TIME_HORIZON,
-        "models": models,
-        "riskFactorPositions": [0],
-        "riskFreePosition": -1,
-        "date": True
-    },
-
-    "25_1": {
-        "path": PATH_FF1,
-        "gammas": GAMMAS,
-        "omegas": OMEGAS,
-        "timeHorizon": TIME_HORIZON,
-        "models": models,
-        "riskFactorPositions": [-1],
-        "riskFreePosition": 0,
-        "date": True
-    }
+presetPaths = {
+    "spsector": PATH_SPSECTOR,
+    "industry": PATH_INDUSTRY,
+    "international": PATH_INTERNATIONAL,
+    "25_1": PATH_FF1,
+    "25_3": PATH_FF3,
+    "25_4": PATH_FF4,
+    "ff4": PATH_Mkt_SMB_HML
 }
 
-def runPresent(presentName):
-    present = presents[presentName]
 
-    app = App(present["path"], present["gammas"], present["omegas"], present["timeHorizon"], present["models"],
-              date=present["date"], riskFactorPositions=present["riskFactorPositions"], riskFreePosition=present["riskFreePosition"])
+def runModel(dataJson):
+    data = json.loads(dataJson)
     
+    delimType = ""
+    
+    if data["delimType"] == "comma":
+        delimType = ","
+    else:
+        delimType = "\s+"
+
+    selectedModels = [models[i] for i in data["models"]]
+    selectedModels.insert(0, models[0])
+    
+    path = data["fileData"] if data.get("selectedPreset") is None else presetPaths[data["selectedPreset"]]
+
+
+    # dateFormat: dateFormat ? dateFormat : null,
+    # riskFactor: riskFactor ? riskFactor : [], // list of numbers
+    # riskFree: riskFree ? riskFree : 0, // single int
+    # timeHorizons: timeHorizons, // list of numbers
+    # gammas: gammas, // list of numbers
+    # dateRangeStart: dateRangeStart ? dateRangeStart : null,
+    # dateRangeEnd: dateRangeEnd ? dateRangeEnd : null,
+
+    app = App(path, data["gammas"], data["timeHorizons"], selectedModels,
+              dateFormat = data["dateFormat"], dateRange=[data["dateRangeStart"], data["dateRangeEnd"]],
+              riskFactorPositions=data["riskFactor"], riskFreePosition=data["riskFree"], delim=delimType)
+
     sr_dict = app.getSharpeRatios()
     sig_dict = app.getStatisticalSignificanceWRTBenchmark(benchmark)
 
-    return [present["gammas"], format(sr_dict, sig_dict)]
-    
+    return [data["gammas"], format(sr_dict, sig_dict, data["gammas"])]
 
-def format(sr_dict, sig_dict):
+
+def format(sr_dict, sig_dict, gammas):
     r = []
 
     for (k,v), (k2,v2) in zip(sr_dict.items(), sig_dict.items()):
         v = list(v)
         if len(v) == 1:
-            v = v * len(GAMMAS)
+            v = v * len(gammas)
 
         if not isinstance(v2, np.ndarray):
-            v2 = [v2] * len(GAMMAS)
+            v2 = [v2] * len(gammas)
         else:
             v2 = list(v2)
 

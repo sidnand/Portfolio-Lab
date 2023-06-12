@@ -7,17 +7,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Testing Portfolio Optimization Methods</title>
 
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="./src/main.css" />
     <link rel="stylesheet" href="./src/libs/css/pyscript_2022.12.1.css" />
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
 
-    <script defer src="./src/libs/js/pyodide_0.22.1.js"></script>
-    <script defer src="./src/libs/js/pyscript_2022.12.1.js"></script>
+    <script src="https://kit.fontawesome.com/65dc67808d.js" crossorigin="anonymous"></script>
+    <!-- http://localhost:8000/portfolioperformance-1.0.0-py3-none-any.whl -->
 
     <py-config>
         packages = ["qpsolvers==2.8.1",
+        "pandas",
         "./src/libs/wheels/quadprog-0.1.11-cp310-cp310-emscripten_3_1_27_wasm32.whl",
-        "./src/libs/wheels/portfoliotest-1.0.0-py3-none-any.whl"]
+        "./src/libs/wheels/portfolioperformance-1.0.0-py3-none-any.whl"
+        ]
 
         [[fetch]]
         files = ["./data/new/processed/25_portfolios_1_factor.csv",
@@ -28,7 +33,7 @@
         "./data/new/processed/international_factor.csv",
         "./data/new/processed/sp_sector.csv"]
     </py-config>
-    
+
     <py-script src="./main.py"></py-script>
 
 </head>
@@ -40,84 +45,121 @@
     </div>
 
     <div id="container" style="opacity: 0.2;">
-        <!-- <div id="container"> -->
+
+        <div id="header">
+            <h1>Testing Portfolio Optimization Methods</h1>
+            <div>
+                <a href="https://github.com/sidnand/Portfolio-Optimization-Interface" target="_blank"><i
+                        class="fa-brands fa-github"></i></a>
+                <a href="" target="_blank"><i class="fa-solid fa-cube"></i></a>
+                <a href="help.html" target="_blank"><i class="fa-solid fa-circle-question"></i></a>
+            </div>
+        </div>
 
         <div id="menu">
-            <form onsubmit="return false">
+            <form onsubmit="return false;" id="form">
                 <fieldset class="form_group" id="load_data">
                     <div id="presets">
                         <label class="form_header">Load</label>
-                        <button onclick='loadClick("spsector")'>S&P 500 Sectors</button>
-                        <button onclick='loadClick("industry")'>Industry</button>
-                        <button onclick='loadClick("international")'>International</button>
-                        <button onclick='loadClick("25_1")'>25 Portfolios (1 Factor)</button>
-                        <!-- <button onclick='loadClick("./data/new/processed/international_factor.csv")'>25 Portfolios (3 Factor)</button> -->
-                        <!-- <button onclick='loadClick("")'>25 Portfolios (4 Factor)</button> -->
-                        <button onclick='loadClick("ff4")'>4 Factor</button>
+
+                        <button class="preset" id="preset_spsector" onclick='togglePreset("spsector")'>S&P 500 Sectors</button>
+                        <button class="preset" id="preset_industry" onclick='togglePreset("industry")'>Industry</button>
+                        <button class="preset" id="preset_international" onclick='togglePreset("international")'>International</button>
+                        <button class="preset" id="preset_25_1" onclick='togglePreset("25_1")'>25 Portfolios (1 Factor)</button>
+                        <button class="preset" id="preset_25_3" onclick='togglePreset("25_3")'>25 Portfolios (3 Factor)</button>
+                        <button class="preset" id="preset_25_4" onclick='togglePreset("25_4")'>25 Portfolios (4 Factor)</button>
+                        <button class="preset" id="preset_ff4" onclick='togglePreset("ff4")'>4 Factor</button>
                     </div>
 
                     <div id="load_or" class="form_header">Or</div>
 
                     <div id="upload">
-                        <label class="form_header">Upload</label>
-                        <input class="file_upload" type="file" name="file" id="file" />
+                        <label class="form_header" for="file">Upload (Coming Soon!)</label>
+                        <input class="file_upload" type="file" name="file" id="file" accept=".csv"
+                            onchange="showFileName()" />
 
-                        <button>Click to Upload</button>
+                        <!-- <button onclick="openUploadDialogue()">Click to Upload</button>
+                        <label id="filename"></label> -->
+                        <button onclick="">Click to Upload</button>
+                        <label id="filename"></label>
                     </div>
                 </fieldset>
-        
-                <!-- <fieldset class="form_group" id="delim_type">
-                    <label class="form_header" for="">Delim Type</label>
-                    <input type="radio" name="delim" value="comma">Comma</input>
-                    <input type="radio" name="delim" value="space-tab">Space/Tab</input>
+
+                <fieldset class="form_group" id="delim_type">
+                    <legend class="form_header">Delimiter Type</legend>
+                    <input type="radio" name="delim" value="comma" checked>Comma</input>
+                    <!-- <input type="radio" name="delim" value="space-tab">Space/Tab</input> -->
                 </fieldset>
-        
+
                 <fieldset class="form_group">
                     <label class="form_header" for="">Data Options</label>
-                    <div id="data_options">
-                        <input type="checkbox" name="format" value="log-scale">Log-Scale</input>
-                        <input type="checkbox" name="format" value="date">Data Includes Date Column (Date Column Must Be First)</input>
-                        <input type="text" placeholder="ex: 0, 1">Risk Factor Column Position (0 Indexed, Multiple Positions)</input>
-                        <input type="text" placeholder="ex: 1">Risk Free Asset Column Position (0 Indexed, Only 1)</input>
+                    <div id="data_options" class="form_group_options">
+                        <!-- <input type="checkbox" name="format" value="log-scale">Log-Scale</input> -->
+                        <label for="">Date Format</label> <input type="text" name="date-format"
+                            placeholder="Default: Y-m-d" />
+                        <label for="">Risk Factor Column Position (0 Indexed, Multiple Positions)</label><input
+                            type="text" name="risk-factor" placeholder="Default: None" />
+                        <label for="">Risk Free Asset Column Position (0 Indexed, Only 1 Position)</label><input
+                            type="text" name="risk-free" placeholder="Default: 0" />
                     </div>
                 </fieldset>
-        
+
                 <fieldset class="form_group">
                     <label class="form_header" for="">Model Properties</label>
-                    <label for="">Time Horizons: </label> <input type="text" placeholder="ex: 60, 120">
-                    <label for="">Gamma values: </label> <input type="text" id="gammas" placeholder="ex: 1, 2, 3">
+                    <div id="model_properties" class="form_group_options">
+                        <label for="">Time Horizons</label> <input type="text" name="time-horizons"
+                            placeholder="ex: 60, 120">
+                        <label for="">Gamma Values</label> <input type="text" name="gammas" id="gammas"
+                            placeholder="ex: 1, 2, 3">
+                    </div>
                 </fieldset>
-        
+
+                <fieldset class="form_group">
+                    <label class="form_header" for="">Date Range (Using Date Format)</label>
+                    <div id="date_range" class="form_group_options">
+                        <label for="">From</label><input type="text" name="date-range-start">
+                        <label for="">To</label><input type="text" name="date-range-end">
+                    </div>
+                </fieldset>
+
                 <fieldset class="form_group">
                     <label class="form_header" for="">Select Models</label>
-        
-                    <input type="checkbox">Equal Weighted</input> <a href="">Learn More</a>
-                    <input type="checkbox">Minimum-Variance</input> <a href="">Learn More</a>
-                    <input type="checkbox">Minimum-Varaince Shortsale Constraints</input> <a href="">Learn More</a>
-                    <input type="checkbox">Minimum-Varaince Generalized Constraints (Jagannathan Ma)</input> <a href="">Learn
-                        More</a>
-                    <input type="checkbox">Kan Zhou Equal Weighted</input> <a href="">Learn More</a>
-                    <input type="checkbox">Mean-Varaince (Markowitz)</input> <a href="">Learn More</a>
-                    <input type="checkbox">Mean-Variance Shortsale</input> <a href="">Learn More</a>
-                    <input type="checkbox">Kan Zhou (2007) "three-fund"</input> <a href="">Learn More</a>
-                    <input type="checkbox">Bayes-Stein</input> <a href="">Learn More</a>
-                    <input type="checkbox">Bayes-Stein Shortsale</input> <a href="">Learn More</a>
-                    <input type="checkbox">MacKinlay and Pastor’s (2000)</input> <a href="">Learn More</a>
-                </fieldset> -->
-        
+
+                    <div id="models">
+
+                        <div><input type="checkbox" name="model" value="1">Minimum-Variance</input></div>
+                        <div><input type="checkbox" name="model" value="2">Minimum-Varaince Shortsale
+                            Constraints</input></div>
+                        <div><input type="checkbox" name="model" value="3">Minimum-Varaince Generalized Constraints
+                            (Jagannathan Ma)</input></div>
+                        <div><input type="checkbox" name="model" value="4">Kan Zhou Equal Weighted</input></div>
+                        <div><input type="checkbox" name="model" value="5">Mean-Varaince (Markowitz)</input></div>
+                        <div><input type="checkbox" name="model" value="6">Mean-Variance Shortsale</input></div>
+                        <div><input type="checkbox" name="model" value="7">Kan Zhou (2007) "three-fund"</input></div>
+                        <div><input type="checkbox" name="model" value="8">Bayes-Stein</input></div>
+                        <div><input type="checkbox" name="model" value="9">Bayes-Stein Shortsale</input></div>
+                        <div><input type="checkbox" name="model" value="10">MacKinlay and Pastor’s (2000)</input></div>
+
+                    </div>
+                </fieldset>
+
                 </fieldset class="form_group">
-                    <!-- <button>Run</button> -->
-                    <button id="export" style="display: none;" onclick="tableToCSV()">Export CSV</button>
+                <button onclick="loadClick()">Run</button>
                 </fieldset>
             </form> <!-- form -->
-        
+
         </div> <!-- menu -->
-        
+
         <div id="results">
-            <table></table>
+            <table id="table_sharpes"></table>
+            <table id="table_signifs" style="margin-top: 50px;"></table>
         </div> <!-- results -->
 
     </div> <!-- container -->
+
+    <script defer src="./src/libs/js/pyodide_0.22.1.js"></script>
+    <!-- <script defer src="./src/libs/js/pyscript_2022.12.1.js"></script> -->
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
 
     <script defer src="./src/main.js"></script>
 
@@ -142,7 +184,6 @@
             eval(execString)
 
             loading(false);
-            
         }
     </script>
 
