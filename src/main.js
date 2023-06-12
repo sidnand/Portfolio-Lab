@@ -20,38 +20,284 @@ let handleFormSubmit = () => {
 
     for (let i = 0; i < models.length; i++) {
         if (models[i].checked) {
-            checkedModels.push(models[i].value)
+            checkedModels.push(Number(models[i].value))
         }
     }
 
-    // read the file which is a csv and save it as a string
-    let reader = new FileReader()
-    reader.readAsText(file, "UTF-8")
-    reader.onload = function (evt) {
-        fileData = evt.target.result
+    let data = {
+        'delimType': delimType, // comma or tab
+        'dateFormat': dateFormat ? dateFormat : null,
+        'riskFactor': riskFactor ? riskFactor : [], // list of numbers
+        'riskFree': riskFree ? riskFree : 0, // single int
+        'timeHorizons': timeHorizons ? timeHorizons : [], // list of numbers
+        'gammas': gammas ? gammas : [], // list of numbers
+        'dateRangeStart': dateRangeStart ? dateRangeStart : null,
+        'dateRangeEnd': dateRangeEnd ? dateRangeEnd : null,
+        'models': checkedModels,
+    }
 
-        let data = {
-            'fileData': fileData,
-            'selectedPreset': selectedPreset,
-            'delimType': delimType,
-            'dateFormat': dateFormat,
-            'riskFactor': riskFactor,
-            'riskFree': riskFree,
-            'timeHorizons': timeHorizons,
-            'gammas': gammas,
-            'dateRangeStart': dateRangeStart,
-            'dateRangeEnd': dateRangeEnd,
-            'models': checkedModels,
+    if (validate(data)) {
+        
+        if (file == undefined) {
+            data["selectedPreset"] = selectedPreset
+
+            run(data)
+        } else {
+            let reader = new FileReader()
+            reader.readAsText(file, "UTF-8")
+            reader.onload = function (evt) {
+                fileData = evt.target.result
+                data["fileData"] = fileData
+
+                run(data)
+            }
         }
 
-        run(data)
+    } else return
+}
+
+let validate = (data) => {
+
+    /*
+        'delimType': delimType, // comma or tab
+        'dateFormat': dateFormat ? dateFormat : null,
+        'riskFactor': riskFactor ? riskFactor : [], // list of numbers
+        'riskFree': riskFree ? riskFree : 0, // single int
+        'timeHorizons': timeHorizons, // list of numbers
+        'gammas': gammas, // list of numbers
+        'dateRangeStart': dateRangeStart ? dateRangeStart : null,
+        'dateRangeEnd': dateRangeEnd ? dateRangeEnd : null,
+        'models': checkedModels,
+    */
+
+    if (data['dateFormat'] != null) {
+    
+        data['dateFormat'] = data['dateFormat'].toLowerCase()
+
+        let validChars = ['y', 'm', 'd', '-', '/', '.']
+
+        let yCount = 0
+        let mCount = 0
+        let dCount = 0
+
+        for (let i = 0; i < data['dateFormat'].length; i++) {
+            let char = data['dateFormat'][i]
+
+            if (!validChars.includes(char)) {
+                alert("Date format can only contain the characters y, m, d, -, /, and .")
+                return false
+            }
+
+            if (char == 'y') {
+                yCount++
+            } else if (char == 'm') {
+                mCount++
+            } else if (char == 'd') {
+                dCount++
+            }
+        }
+
+        if (yCount + mCount + dCount == 0) {
+            alert("Date format must contain at least one of y, m, or d")
+            return false
+        } else if (yCount > 1 || mCount > 1 || dCount > 1) {
+            alert("Date format can not contain more than one of y, m, or d")
+            return false
+        }
+
+        // replace y (upper and lower) with %Y, m (upper and lower) with %m, and d (upper and lower) with %d
+        data['dateFormat'] = data['dateFormat'].replace(/y/g, '%Y')
+        data['dateFormat'] = data['dateFormat'].replace(/m/g, '%m')
+        data['dateFormat'] = data['dateFormat'].replace(/d/g, '%d')
+
     }
+
+    try {
+        data['riskFactor'] = data['riskFactor'].split(',').map(Number)
+
+        for (let i = 0; i < data['riskFactor'].length; i++) {
+            if (isNaN(data['riskFactor'][i])) {
+                throw error
+            }
+        }
+    } catch (error) {
+        alert("Risk Factor must be a comma separated list of numbers")
+        return false
+    }
+
+    try {
+        // convert risk free to number
+        data['riskFree'] = Number(data['riskFree'])
+    } catch (error) {
+        alert("Risk Free must be a number")
+        return false
+    }
+
+    try {
+        data['timeHorizons'] = data['timeHorizons'].split(',').map(Number)
+    
+        for (let i = 0; i < data['timeHorizons'].length; i++) {
+            if (isNaN(data['timeHorizons'][i])) {
+                throw error
+            }
+        }
+
+        // if last element is 0, remove it
+        if (data['timeHorizons'][data['timeHorizons'].length - 1] == 0) {
+            data['timeHorizons'].pop()
+        }
+    } catch (error) {
+        alert("Time Horizons must be a comma separated list of numbers")
+        return false
+    }
+
+    try {
+        data['gammas'] = data['gammas'].split(',').map(Number)
+        
+        for (let i = 0; i < data['gammas'].length; i++) {
+            if (isNaN(data['gammas'][i])) {
+                throw error
+            }
+        }
+
+        // if last element is 0, remove it
+        if (data['gammas'][data['gammas'].length - 1] == 0) {
+            data['gammas'].pop()
+        }
+    } catch (error) {
+        alert("Gammas must be a comma separated list of numbers")
+        return false
+    }
+
+    // check if date format is not null, date range start and end are not null
+    if (data['dateFormat'] != null && (data['dateRangeStart'] == null || data['dateRangeEnd'] == null)) {
+        alert("Must specify both a start and end date")
+        return false
+    } else if (data['dateFormat'] == null && (data['dateRangeStart'] != null || data['dateRangeEnd'] != null)) {
+        alert("Must specify a date format")
+        return false
+    }
+
+    // date range start and end must be the same length
+    if (data['dateRangeStart'] != null && data['dateRangeEnd'] != null && data['dateRangeStart'].length != data['dateRangeEnd'].length) {
+        alert("Start and end date must be the same length")
+        return false
+    }
+
+    // check if date range start and end are same length
+    if (data['dateRangeStart'] != null && data['dateRangeEnd'] != null && data['dateRangeStart'].length != data['dateRangeEnd'].length) {
+        alert("Start and end date must be the same length")
+        return false
+    }
+
+    // check if date format contains -, /, or ., then date range start and end must contains the same characters, the same number of times and in the same order
+    if (data['dateFormat'] != null && (data['dateFormat'].includes('-') || data['dateFormat'].includes('/') || data['dateFormat'].includes('.'))) {
+        let start = data['dateRangeStart']
+        let end = data['dateRangeEnd']
+        let dateFormat = data['dateFormat']
+
+        let startChars = []
+        let endChars = []
+        let dateFormatChars = []
+
+        for (let i = 0; i < start.length; i++) {
+            let char = start[i]
+
+            if (char == '-' || char == '/' || char == '.') {
+                startChars.push(char)
+            } else if (isNaN(char)) {
+                alert("Date range must be formatted the same as the date format. It can only contain numbers, -, /, and .")
+                return false
+            }
+        }
+
+        for (let i = 0; i < end.length; i++) {
+            let char = end[i]
+
+            if (char == '-' || char == '/' || char == '.') {
+                endChars.push(char)
+            } else if (isNaN(char)) {
+                alert("Date range must be formatted the same as the date format. It can only contain numbers, -, /, and .")
+                return false
+            }
+        }
+
+        for (let i = 0; i < dateFormat.length; i++) {
+            let char = dateFormat[i]
+
+            if (char == '-' || char == '/' || char == '.') {
+                dateFormatChars.push(char)
+            }
+        }
+
+        if (startChars.length != endChars.length || startChars.length != dateFormatChars.length) {
+            alert("Date range must be formatted the same as the date format")
+            return false
+        }
+
+        for (let i = 0; i < startChars.length; i++) {
+            if (startChars[i] != dateFormatChars[i] || endChars[i] != dateFormatChars[i]) {
+                alert("Date range must be formatted the same as the date format")
+                return false
+            }
+        }
+    }
+
+
+    if (data['models'].length == 0) {
+        alert("Must select at least one model")
+        return false
+    }
+
+    return true
+
+}
+
+let run = (data) => {
+    // convert data to json string
+    let dataJson = JSON.stringify(data)
+
+    runModel = pyodideGlobals.get('runModel')
+    proxy = runModel(dataJson)
+
+    gammas = []
+    data = {}
+
+    let gamma_proxy = proxy.get(0)
+    let data_proxy = proxy.get(1)
+
+    for (let i = 0; i < gamma_proxy.length; i++) {
+        gammas.push(gamma_proxy.get(i))
+    }
+
+    for (let i = 0; i < data_proxy.length; i++) {
+        let name = data_proxy.get(i).get(0)
+
+        data[name] = {
+            'name': name,
+            'src': [],
+            'sig': [],
+        }
+
+        srs = data_proxy.get(i).get(1)
+        sigs = data_proxy.get(i).get(2)
+
+        for (let j = 0; j < srs.length; j++) {
+            data[name]['src'].push(srs.get(j))
+            data[name]['sig'].push(sigs.get(j))
+        }
+    }
+
+    showResults(gammas, data)
+    document.body.style.cursor = 'default';
+    loading(false);
 }
 
 let loadClick = () => {
-    loading(true)
+    document.body.style.cursor = 'wait';
+    loading(true);
     setTimeout(function () {
-        run()
+        handleFormSubmit()
     }, 1000);
 }
 
@@ -80,32 +326,35 @@ let togglePreset = (name) => {
     delimType.checked = true
 
     switch (name) {
-        
+
         case "spsector":
             riskFactor.value = "6"
-            dateFormat.value = "YYYYMMDD"
+            riskFree.value = "0"
+            dateFormat.value = "Ymd"
             dateRangeStart.value = "19990101"
             dateRangeEnd.value = "20201201"
             break;
-        
+
         case "industry":
             riskFactor.value = "-1"
-            dateFormat.value = "YYYYMM"
+            riskFree.value = "0"
+            dateFormat.value = "Ym"
             dateRangeStart.value = "199901"
             dateRangeEnd.value = "202012"
             break;
 
         case "international":
             riskFactor.value = "-1"
-            dateFormat.value = "YYYYMM"
-            dateRangeStart.value = "199901"
-            dateRangeEnd.value = "202012"
+            riskFree.value = "0"
+            dateFormat.value = "d-m-Y"
+            dateRangeStart.value = "29-01-1999"
+            dateRangeEnd.value = "31-12-2019"
             break;
-        
+
         case "25_1":
             riskFactor.value = "-1"
             riskFree.value = "0"
-            dateFormat.value = "YYYYMM"
+            dateFormat.value = "Ym"
             dateRangeStart.value = "199901"
             dateRangeEnd.value = "202012"
             break;
@@ -113,22 +362,24 @@ let togglePreset = (name) => {
         case "25_3":
             riskFactor.value = "-1, -2, -3"
             riskFree.value = "0"
-            dateFormat.value = "YYYYMM"
+            dateFormat.value = "Ym"
             dateRangeStart.value = "199901"
             dateRangeEnd.value = "202012"
             break;
-        
+
         case "25_4":
             riskFactor.value = "-1, -2, -3, -4"
             riskFree.value = "0"
-            dateFormat.value = "YYYYMM"
+            dateFormat.value = "Ym"
+            dateRangeStart.value = "199901"
             dateRangeEnd.value = "202012"
             break;
-    
+
         case "ff4":
             riskFactor.value = "0"
             riskFree.value = "-1"
-            dateFormat.value = "YYYYMM"
+            dateFormat.value = "Ym"
+            dateRangeStart.value = "199901"
             dateRangeEnd.value = "202012"
             break;
 
@@ -142,6 +393,8 @@ let togglePreset = (name) => {
         riskFactor.value = ""
         riskFree.value = ""
         dateFormat.value = ""
+        dateRangeStart.value = ""
+        dateRangeEnd.value = ""
     } else {
         activateButton.style.backgroundColor = "#fff176"
         selectedPreset = name
@@ -151,8 +404,20 @@ let togglePreset = (name) => {
 let openUploadDialogue = () => {
     document.getElementById('file').click()
 
-    let buttons = document.getElementsByClassName("preset")
+    let dateFormat = form.elements['date-format']
+    let riskFactor = form.elements['risk-factor']
+    let riskFree = form.elements['risk-free']
+    let dateRangeStart = form.elements['date-range-start']
+    let dateRangeEnd = form.elements['date-range-end']
+
     selectedPreset = ""
+    dateFormat.value = ""
+    riskFactor.value = ""
+    riskFree.value = ""
+    dateRangeStart.value = ""
+    dateRangeEnd.value = ""
+
+    let buttons = document.getElementsByClassName("preset")
     for (let i = 0; i < buttons.length; i++) {
         buttons[i].style.backgroundColor = "#fff9c4"
     }
@@ -162,45 +427,6 @@ let showFileName = () => {
     let file = document.getElementById('file').files[0]
     let fileName = document.getElementById('filename')
     fileName.innerHTML = file.name
-}
-
-let run = (data) => {
-    // convert data to json string
-    let dataJson = JSON.stringify(data)
-    
-    runModel = pyodideGlobals.get('runModel')
-    proxy = runModel(dataJson)
-
-    // gammas = []
-    // data = {}
-
-    // let gamma_proxy = proxy.get(0)
-    // let data_proxy = proxy.get(1)
-
-    // for (let i = 0; i < gamma_proxy.length; i++) {
-    //     gammas.push(gamma_proxy.get(i))
-    // }
-
-    // for (let i = 0; i < data_proxy.length; i++) {
-    //     let name = data_proxy.get(i).get(0)
-
-    //     data[name] = {
-    //         'name': name,
-    //         'src': [],
-    //         'sig': [],
-    //     }
-
-    //     srs = data_proxy.get(i).get(1)
-    //     sigs = data_proxy.get(i).get(2)
-
-    //     for (let j = 0; j < srs.length; j++) {
-    //         data[name]['src'].push(srs.get(j))
-    //         data[name]['sig'].push(sigs.get(j))
-    //     }
-    // }
-
-    // showResults(gammas, data)
-    loading(false);
 }
 
 function show(element, show) {
@@ -295,7 +521,7 @@ function tableToCSV(tableName) {
     // Combine each row data with new line character
     csv_data = csv_data.join('\n');
 
-    // Call this function to download csv file 
+    // Call this function to download csv file
     downloadCSVFile(csv_data);
 }
 

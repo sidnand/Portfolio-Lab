@@ -74,10 +74,12 @@ input[type="radio"] {
 
 input[type="radio"]:hover {
     background-color: #fff176;
+    border-color: #fff176;
 }
 
 input[type="radio"]:checked {
     background-color: #fff176;
+    border-color: #fff176;
 }
 
 input[type="text"] {
@@ -86,10 +88,35 @@ input[type="text"] {
     border: none;
     background-color: #fff9c4;
     transition: all 200ms ease-in-out;
+    width: 300px;
 }
 
 input[type="text"]:focus {
     background-color: #fff176;
+}
+
+input[type="checkbox"] {
+    -webkit-appearance: none;
+    appearance: none;
+    margin-right: 10px;
+    margin-left: 20px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    height: 15px;
+    width: 15px;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+input[type="checkbox"]:hover {
+    background-color: #fff176;
+    border-color: #fff176;
+}
+
+input[type="checkbox"]:checked {
+    background-color: #fff176;
+    border-color: #fff176;
 }
 
 button {
@@ -123,9 +150,16 @@ button:hover {
 
 .form_group_options {
     margin: 20px;
+    display: flex;
+    flex-direction: column;
+
 }
 
 .form_group_options label {
+    margin: 10px;
+}
+
+#models div {
     margin: 10px;
 }
 

@@ -1,5 +1,4 @@
 import json
-from typing import Dict, List
 import js
 import numpy as np
 from pyodide.ffi import create_proxy
@@ -13,120 +12,77 @@ PATH_FF1 = "./data/new/processed/25_portfolios_1_factor.csv"
 PATH_FF3 = "./data/new/processed/25_portfolios_3_factor.csv"
 PATH_FF4 = "./data/new/processed/25_portfolios_4_factor.csv"
 
-# MODEL CONSTANTS
-
-# Risk averse levels
-GAMMAS = [1, 2, 3, 4, 5, 10]
-
-# Time horizons
-TIME_HORIZON = [60, 120]
-
 benchmark = EqualWeight("Equal Weight")
-minVar = MinVar("Minimum Variance")
-JagannathanMa = JagannathanMa("Jagannathan Ma")
-minVarShortSellCon = MinVarShortSellCon(
-    "Minimum Variance with Short Sell Constraints")
-kanZhouEw = KanZhouEw("Kan Zhou EW")
-
-meanVar = MeanVar("Mean Variance (Markowitz)")
-meanVarShortSellCon = MeanVarShortSellCon(
-    "Mean Variance with Short Sell Constraints")
-kanZhou = KanZhou("Kan Zhou Three Fund")
-bayesStein = BayesStein("Bayes Stein")
-bayesSteinShortSellCon = BayesSteinShortSellCon(
-    "Bayes Stein with Short Sell Constraints")
-macKinlayPastor = MacKinlayPastor("MacKinlay and Pastor")
 
 models = [
     benchmark,
-    minVar,
-    JagannathanMa,
-    minVarShortSellCon,
-    kanZhouEw,
-    meanVar,
-    meanVarShortSellCon,
-    kanZhou,
-    bayesStein,
-    bayesSteinShortSellCon,
-    macKinlayPastor
+    MinVar("Minimum Variance"),
+    JagannathanMa("Jagannathan Ma"),
+    MinVarShortSellCon("Minimum Variance with Short Sell Constraints"),
+    KanZhouEw("Kan Zhou EW"),
+    MeanVar("Mean Variance (Markowitz)"),
+    MeanVarShortSellCon("Mean Variance with Short Sell Constraints"),
+    KanZhou("Kan Zhou Three Fund"),
+    BayesStein("Bayes Stein"),
+    BayesSteinShortSellCon("Bayes Stein with Short Sell Constraints"),
+    MacKinlayPastor("MacKinlay and Pastor")
 ]
 
-presents = {
-    "spsector": {
-        "path": PATH_SPSECTOR,
-        "gammas": GAMMAS,
-        "timeHorizon": TIME_HORIZON,
-        "models": models,
-        "riskFactorPositions": [6],
-        "riskFreePosition": 0,
-    },
-
-    "industry": {
-        "path": PATH_INDUSTRY,
-        "gammas": GAMMAS,
-        "timeHorizon": TIME_HORIZON,
-        "models": models,
-        "riskFactorPositions": [-1],
-        "riskFreePosition": 0,
-    },
-
-    "international": {
-        "path": PATH_INTERNATIONAL,
-        "gammas": GAMMAS,
-        "timeHorizon": TIME_HORIZON,
-        "models": models,
-        "riskFactorPositions": [-1],
-        "riskFreePosition": 0,
-    },
-
-    "ff4": {
-        "path": PATH_Mkt_SMB_HML,
-        "gammas": GAMMAS,
-        "timeHorizon": TIME_HORIZON,
-        "models": models,
-        "riskFactorPositions": [0],
-        "riskFreePosition": -1,
-    },
-
-    "25_1": {
-        "path": PATH_FF1,
-        "gammas": GAMMAS,
-        "timeHorizon": TIME_HORIZON,
-        "models": models,
-        "riskFactorPositions": [-1],
-        "riskFreePosition": 0,
-    }
+presetPaths = {
+    "spsector": PATH_SPSECTOR,
+    "industry": PATH_INDUSTRY,
+    "international": PATH_INTERNATIONAL,
+    "25_1": PATH_FF1,
+    "25_3": PATH_FF3,
+    "25_4": PATH_FF4,
+    "ff4": PATH_Mkt_SMB_HML
 }
 
-def runPresent(presentName):
-    present = presents[presentName]
-
-    app = App(present["path"], present["gammas"], present["timeHorizon"], present["models"],
-              riskFactorPositions=present["riskFactorPositions"], riskFreePosition=present["riskFreePosition"])
-    
-    sr_dict = app.getSharpeRatios()
-    sig_dict = app.getStatisticalSignificanceWRTBenchmark(benchmark)
-
-    return [present["gammas"], format(sr_dict, sig_dict)]
 
 def runModel(dataJson):
     data = json.loads(dataJson)
-
-    # loop through json and print key and value
-    for key in data:
-        print(key, data[key])
     
+    delimType = ""
+    
+    if data["delimType"] == "comma":
+        delimType = ","
+    else:
+        delimType = "\s+"
 
-def format(sr_dict, sig_dict):
+    selectedModels = [models[i] for i in data["models"]]
+    selectedModels.insert(0, models[0])
+    
+    path = data["fileData"] if data.get("selectedPreset") is None else presetPaths[data["selectedPreset"]]
+
+
+    # dateFormat: dateFormat ? dateFormat : null,
+    # riskFactor: riskFactor ? riskFactor : [], // list of numbers
+    # riskFree: riskFree ? riskFree : 0, // single int
+    # timeHorizons: timeHorizons, // list of numbers
+    # gammas: gammas, // list of numbers
+    # dateRangeStart: dateRangeStart ? dateRangeStart : null,
+    # dateRangeEnd: dateRangeEnd ? dateRangeEnd : null,
+
+    app = App(path, data["gammas"], data["timeHorizons"], selectedModels,
+              dateFormat = data["dateFormat"], dateRange=[data["dateRangeStart"], data["dateRangeEnd"]],
+              riskFactorPositions=data["riskFactor"], riskFreePosition=data["riskFree"], delim=delimType)
+
+    sr_dict = app.getSharpeRatios()
+    sig_dict = app.getStatisticalSignificanceWRTBenchmark(benchmark)
+
+    return [data["gammas"], format(sr_dict, sig_dict, data["gammas"])]
+
+
+def format(sr_dict, sig_dict, gammas):
     r = []
 
     for (k,v), (k2,v2) in zip(sr_dict.items(), sig_dict.items()):
         v = list(v)
         if len(v) == 1:
-            v = v * len(GAMMAS)
+            v = v * len(gammas)
 
         if not isinstance(v2, np.ndarray):
-            v2 = [v2] * len(GAMMAS)
+            v2 = [v2] * len(gammas)
         else:
             v2 = list(v2)
 
