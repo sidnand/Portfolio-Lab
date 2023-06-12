@@ -37,6 +37,9 @@ let handleFormSubmit = () => {
     }
 
     if (validate(data)) {
+
+        loading(true);
+        document.body.style.cursor = 'wait';
         
         if (file == undefined) {
             data["selectedPreset"] = selectedPreset
@@ -291,14 +294,6 @@ let run = (data) => {
     showResults(gammas, data)
     document.body.style.cursor = 'default';
     loading(false);
-}
-
-let loadClick = () => {
-    document.body.style.cursor = 'wait';
-    loading(true);
-    setTimeout(function () {
-        handleFormSubmit()
-    }, 1000);
 }
 
 let togglePreset = (name) => {
