@@ -18,10 +18,11 @@
     <!-- http://localhost:8000/portfolioperformance-1.0.0-py3-none-any.whl -->
 
     <py-config>
-        packages = ["qpsolvers==2.8.1",
-        "pandas",
-        "./src/libs/wheels/quadprog-0.1.11-cp310-cp310-emscripten_3_1_27_wasm32.whl",
-        "./src/libs/wheels/portfolioperformance-1.0.0-py3-none-any.whl"
+        packages = [
+            "qpsolvers==2.8.1",
+            "pandas",
+            "./src/libs/wheels/quadprog-0.1.11-cp310-cp310-emscripten_3_1_27_wasm32.whl",
+            "./src/libs/wheels/portfolioperformance-1.0.0-py3-none-any.whl"
         ]
 
         [[fetch]]
@@ -158,8 +159,7 @@
     </div> <!-- container -->
 
     <script defer src="./src/libs/js/pyodide_0.22.1.js"></script>
-    <!-- <script defer src="./src/libs/js/pyscript_2022.12.1.js"></script> -->
-    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    <script defer src="./src/libs/js/pyscript_2022.12.1.js"></script>
 
     <script defer src="./src/main.js"></script>
 
