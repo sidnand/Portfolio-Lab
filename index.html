@@ -22,7 +22,7 @@
             "qpsolvers==2.8.1",
             "pandas",
             "./src/libs/wheels/quadprog-0.1.11-cp310-cp310-emscripten_3_1_27_wasm32.whl",
-            "./src/libs/wheels/portfolioperformance-1.0.0-py3-none-any.whl"
+            "http://localhost:8000/portfolioperformance-1.0.0-py3-none-any.whl"
         ]
 
         [[fetch]]
@@ -87,7 +87,7 @@
                 <fieldset class="form_group" id="delim_type">
                     <legend class="form_header">Delimiter Type</legend>
                     <input type="radio" name="delim" value="comma" checked>Comma</input>
-                    <!-- <input type="radio" name="delim" value="space-tab">Space/Tab</input> -->
+                    <input type="radio" name="delim" value="space-tab">Space/Tab</input>
                 </fieldset>
 
                 <fieldset class="form_group">
@@ -143,7 +143,7 @@
                 </fieldset>
 
                 </fieldset class="form_group">
-                <button onclick="handleFormSubmit()">Run</button>
+                    <button onclick="handleFormSubmit()">Run</button>
                 </fieldset>
             </form> <!-- form -->
 

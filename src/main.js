@@ -73,7 +73,10 @@ let validate = (data) => {
         'models': checkedModels,
     */
 
-    if (data['dateFormat'] != null) {
+    if (data['dateFormat'] == null) {
+        alert("There must be a dateformat")
+        return false
+    } else {
     
         data['dateFormat'] = data['dateFormat'].toLowerCase()
 
