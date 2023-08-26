@@ -27,8 +27,8 @@ let handleFormSubmit = () => {
     let data = {
         'delimType': delimType, // comma or tab
         'dateFormat': dateFormat ? dateFormat : null,
-        'riskFactor': riskFactor ? riskFactor : [], // list of numbers
-        'riskFree': riskFree ? riskFree : 0, // single int
+        'riskFactor': riskFactor != "" ? riskFactor : [], // list of numbers
+        'riskFree': riskFree ? riskFree : 1, // single int
         'timeHorizons': timeHorizons ? timeHorizons : [], // list of numbers
         'gammas': gammas ? gammas : [], // list of numbers
         'dateRangeStart': dateRangeStart ? dateRangeStart : null,
@@ -37,8 +37,6 @@ let handleFormSubmit = () => {
     }
 
     if (validate(data)) {
-
-        loading(true);
         document.body.style.cursor = 'wait';
         
         if (file == undefined) {
@@ -119,12 +117,16 @@ let validate = (data) => {
     }
 
     try {
-        data['riskFactor'] = data['riskFactor'].split(',').map(Number)
+        if (data['riskFactor'].length > 0) {
 
-        for (let i = 0; i < data['riskFactor'].length; i++) {
-            if (isNaN(data['riskFactor'][i])) {
-                throw error
+            data['riskFactor'] = data['riskFactor'].split(',').map(Number)
+
+            for (let i = 0; i < data['riskFactor'].length; i++) {
+                if (isNaN(data['riskFactor'][i])) {
+                    throw error
+                }
             }
+
         }
     } catch (error) {
         alert("Risk Factor must be a comma separated list of numbers")
@@ -175,18 +177,9 @@ let validate = (data) => {
         return false
     }
 
-    // check if date format is not null, date range start and end are not null
-    if (data['dateFormat'] != null && (data['dateRangeStart'] == null || data['dateRangeEnd'] == null)) {
-        alert("Must specify both a start and end date")
-        return false
-    } else if (data['dateFormat'] == null && (data['dateRangeStart'] != null || data['dateRangeEnd'] != null)) {
+    // check if date format is null, date range start and end are not null
+    if (data['dateFormat'] == null && (data['dateRangeStart'] != null || data['dateRangeEnd'] != null)) {
         alert("Must specify a date format")
-        return false
-    }
-
-    // date range start and end must be the same length
-    if (data['dateRangeStart'] != null && data['dateRangeEnd'] != null && data['dateRangeStart'].length != data['dateRangeEnd'].length) {
-        alert("Start and end date must be the same length")
         return false
     }
 
@@ -265,38 +258,46 @@ let run = (data) => {
 
     runModel = pyodideGlobals.get('runModel')
     proxy = runModel(dataJson)
+    try {
+        res = proxy.toJs()
 
-    gammas = []
-    data = {}
-
-    let gamma_proxy = proxy.get(0)
-    let data_proxy = proxy.get(1)
-
-    for (let i = 0; i < gamma_proxy.length; i++) {
-        gammas.push(gamma_proxy.get(i))
-    }
-
-    for (let i = 0; i < data_proxy.length; i++) {
-        let name = data_proxy.get(i).get(0)
-
-        data[name] = {
-            'name': name,
-            'src': [],
-            'sig': [],
+        error = res.get('error')
+        if (error != null) {
+            alert(error)
         }
 
-        srs = data_proxy.get(i).get(1)
-        sigs = data_proxy.get(i).get(2)
+        gammas = res.get('gamma')
+        data = {}
 
-        for (let j = 0; j < srs.length; j++) {
-            data[name]['src'].push(srs.get(j))
-            data[name]['sig'].push(sigs.get(j))
+        let data_proxy = res.get('sr')
+
+        console.log(data_proxy)
+
+        for (let i = 0; i < data_proxy.length; i++) {
+            let name = data_proxy[i][0]
+
+            data[name] = {
+                'name': name,
+                'src': [],
+                'sig': [],
+            }
+
+            srs = data_proxy[i][1]
+            sigs = data_proxy[i][2]
+
+            for (let j = 0; j < srs.length; j++) {
+                data[name]['src'].push(srs[j])
+                data[name]['sig'].push(sigs[j])
+            }
         }
-    }
 
-    showResults(gammas, data)
-    document.body.style.cursor = 'default';
-    loading(false);
+        showResults(gammas, data)
+        document.body.style.cursor = 'default';
+    } catch (error) {
+        alert("Error running model")
+        document.body.style.cursor = 'default';
+        return
+    }
 }
 
 let togglePreset = (name) => {
@@ -310,7 +311,7 @@ let togglePreset = (name) => {
     fileName.innerHTML = ""
 
     for (let i = 0; i < buttons.length; i++) {
-        buttons[i].style.backgroundColor = "#fff9c4"
+        buttons[i].style.backgroundColor = "#0d6efd"
     }
 
     let delimType = form.elements['delim']
@@ -326,56 +327,56 @@ let togglePreset = (name) => {
     switch (name) {
 
         case "spsector":
-            riskFactor.value = "6"
-            riskFree.value = "0"
+            riskFactor.value = "7"
+            riskFree.value = "1"
             dateFormat.value = "Ymd"
             dateRangeStart.value = "19990101"
             dateRangeEnd.value = "20201201"
             break;
 
         case "industry":
-            riskFactor.value = "-1"
-            riskFree.value = "0"
+            riskFactor.value = "12"
+            riskFree.value = "1"
             dateFormat.value = "Ym"
             dateRangeStart.value = "199901"
             dateRangeEnd.value = "202012"
             break;
 
         case "international":
-            riskFactor.value = "-1"
-            riskFree.value = "0"
+            riskFactor.value = "10"
+            riskFree.value = "1"
             dateFormat.value = "d-m-Y"
             dateRangeStart.value = "29-01-1999"
             dateRangeEnd.value = "31-12-2019"
             break;
 
         case "25_1":
-            riskFactor.value = "-1"
-            riskFree.value = "0"
+            riskFactor.value = "27"
+            riskFree.value = "1"
             dateFormat.value = "Ym"
             dateRangeStart.value = "199901"
             dateRangeEnd.value = "202012"
             break;
 
         case "25_3":
-            riskFactor.value = "-1, -2, -3"
-            riskFree.value = "0"
+            riskFactor.value = "26, 27, 28"
+            riskFree.value = "1"
             dateFormat.value = "Ym"
             dateRangeStart.value = "199901"
             dateRangeEnd.value = "202012"
             break;
 
         case "25_4":
-            riskFactor.value = "-1, -2, -3, -4"
-            riskFree.value = "0"
+            riskFactor.value = "26, 27, 28, 29"
+            riskFree.value = "1"
             dateFormat.value = "Ym"
             dateRangeStart.value = "199901"
             dateRangeEnd.value = "202012"
             break;
 
         case "ff4":
-            riskFactor.value = "0"
-            riskFree.value = "-1"
+            riskFactor.value = "1"
+            riskFree.value = "4"
             dateFormat.value = "Ym"
             dateRangeStart.value = "199901"
             dateRangeEnd.value = "202012"
@@ -384,7 +385,7 @@ let togglePreset = (name) => {
     }
 
     if (selectedPreset == "") {
-        activateButton.style.backgroundColor = "#fff176"
+        activateButton.style.backgroundColor = "#020aab"
         selectedPreset = name
     } else if (selectedPreset == name) {
         selectedPreset = ""
@@ -394,7 +395,7 @@ let togglePreset = (name) => {
         dateRangeStart.value = ""
         dateRangeEnd.value = ""
     } else {
-        activateButton.style.backgroundColor = "#fff176"
+        activateButton.style.backgroundColor = "#020aab"
         selectedPreset = name
     }
 }
@@ -417,7 +418,7 @@ let openUploadDialogue = () => {
 
     let buttons = document.getElementsByClassName("preset")
     for (let i = 0; i < buttons.length; i++) {
-        buttons[i].style.backgroundColor = "#fff9c4"
+        buttons[i].style.backgroundColor = "#0d6efd"
     }
 }
 
@@ -440,16 +441,16 @@ let showResults = (gammas, data) => {
     tableSignifs.innerHTML = ""
 
     let captionSharpe = `<caption>Sharpe Ratios</caption>`
-    let captionSignif = `<caption>P-Values</caption>`
+    let captionSignif = `<caption>P-Values With Respect to Equal Weights Model</caption>`
 
     tableSharpes.innerHTML += captionSharpe
     tableSignifs.innerHTML += captionSignif
 
     // create header row
-    let headerRow = `<tr><th class="c">Models &darr; | Gammas &rarr;</th>`
+    let headerRow = `<tr><th>Models &darr; | Gammas &rarr;</th>`
 
     for (let i = 0; i < gammas.length; i++) {
-        let gammaHeader = `<th class="c">${gammas[i]}</th>`
+        let gammaHeader = `<th>${gammas[i]}</th>`
         headerRow += gammaHeader
     }
 
@@ -461,8 +462,8 @@ let showResults = (gammas, data) => {
 
     // create data rows
     for (let key in data) {
-        let rowSharpe = `<tr><td class="l">${data[key]['name']}</td>`
-        let rowSignif = `<tr><td class="l">${data[key]['name']}</td>`
+        let rowSharpe = `<tr><td>${data[key]['name']}</td>`
+        let rowSignif = `<tr><td>${data[key]['name']}</td>`
 
         for (let i = 0; i < data[key]['src'].length; i++) {
             let src = data[key]['src'][i].toFixed(3)
@@ -480,9 +481,11 @@ let showResults = (gammas, data) => {
         tableSignifs.innerHTML += rowSignif
     }
 
+    // underneath tableSharpes, add a button
+
     // add button to export table to csv at the bottom of the table
-    tableSharpes.innerHTML += `<tr><td colspan="${gammas.length + 1}"><button onclick="tableToCSV('sharpe')">Download</button></td></tr>`
-    tableSignifs.innerHTML += `<tr><td colspan="${gammas.length + 1}"><button onclick="tableToCSV('signif')">Download</button></td></tr>`
+    tableSharpes.innerHTML += `<tr><td><button style="width: 200px" class="btn btn-primary" onclick="tableToCSV('sharpe')">Download</button></td></tr>`
+    tableSignifs.innerHTML += `<tr><td><button style="width: 200px" class="btn btn-primary" onclick="tableToCSV('signif')">Download</button></td></tr>`
 }
 
 // The below code is from: https://www.geeksforgeeks.org/how-to-export-html-table-to-csv-using-javascript/

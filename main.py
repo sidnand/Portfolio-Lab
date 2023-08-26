@@ -38,7 +38,6 @@ presetPaths = {
     "ff4": PATH_Mkt_SMB_HML
 }
 
-
 def runModel(dataJson):
     data = json.loads(dataJson)
     
@@ -62,15 +61,28 @@ def runModel(dataJson):
     # gammas: gammas, // list of numbers
     # dateRangeStart: dateRangeStart ? dateRangeStart : null,
     # dateRangeEnd: dateRangeEnd ? dateRangeEnd : null,
+    
+    
+    dateRange = [] if data["dateRangeStart"] == None or data["dateRangeEnd"] == None else [data["dateRangeStart"], data["dateRangeEnd"]]
 
-    app = App(path, data["gammas"], data["timeHorizons"], selectedModels,
-              dateFormat = data["dateFormat"], dateRange=[data["dateRangeStart"], data["dateRangeEnd"]],
-              riskFactorPositions=data["riskFactor"], riskFreePosition=data["riskFree"], delim=delimType)
-
-    sr_dict = app.getSharpeRatios()
-    sig_dict = app.getStatisticalSignificanceWRTBenchmark(benchmark)
-
-    return [data["gammas"], format(sr_dict, sig_dict, data["gammas"])]
+    try:
+        app = App(path, data["gammas"], data["timeHorizons"], selectedModels,
+                dateFormat = data["dateFormat"], dateRange=dateRange,
+                riskFactorPositions=data["riskFactor"], riskFreePosition=data["riskFree"], delim=delimType)
+            
+        sr_dict = app.getSharpeRatios()
+        sig_dict = app.getStatisticalSignificanceWRTBenchmark(benchmark)
+        
+        gammas = data["gammas"]
+        sr = format(sr_dict, sig_dict, data["gammas"])
+        
+        return {
+            "gamma": gammas,
+            "sr": sr
+        }
+    
+    except Exception as e:
+        print(e)
 
 
 def format(sr_dict, sig_dict, gammas):

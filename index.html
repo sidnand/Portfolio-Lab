@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="manifest" href="/path/to/manifest.json">
+
     <title>Testing Portfolio Optimization Methods</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+
     <link rel="stylesheet" type="text/css" href="./src/main.css" />
     <link rel="stylesheet" href="./src/libs/css/pyscript_2022.12.1.css" />
-    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
 
     <script src="https://kit.fontawesome.com/65dc67808d.js" crossorigin="anonymous"></script>
-    <!-- http://localhost:8000/portfolioperformance-1.0.0-py3-none-any.whl -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
 
     <py-config>
         packages = [
             "qpsolvers==2.8.1",
             "pandas",
             "./src/libs/wheels/quadprog-0.1.11-cp310-cp310-emscripten_3_1_27_wasm32.whl",
-            "http://localhost:8000/portfolioperformance-1.0.0-py3-none-any.whl"
+            "./src/libs/wheels/portfolioperformance-1.0.0-py3-none-any.whl"
         ]
 
         [[fetch]]
@@ -36,142 +36,224 @@
     </py-config>
 
     <py-script src="./main.py"></py-script>
-
 </head>
-
 <body>
+    
+    <div class="container">
 
-    <div id="loader">
-        <span class="loader"></span>
-    </div>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
 
-    <div id="container" style="opacity: 0.2;">
-
-        <div id="header">
-            <h1>Testing Portfolio Optimization Methods</h1>
-            <div>
-                <a href="https://github.com/sidnand/Portfolio-Optimization-Interface" target="_blank"><i
-                        class="fa-brands fa-github"></i></a>
-                <a href="" target="_blank"><i class="fa-solid fa-cube"></i></a>
-                <a href="help.html" target="_blank"><i class="fa-solid fa-circle-question"></i></a>
-            </div>
+        <h1>Testing Portfolio Optimization Methods</h1>
+        <div class="d-flex">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="https://github.com/sidnand/Portfolio-Optimization-Interface" target="_blank">
+                        <i class="fa-brands fa-github"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="" target="_blank">
+                        <i class="fa-solid fa-cube"></i>
+                    </a>
+                </li>
+            </ul>
         </div>
 
-        <div id="menu">
+        </div>
+    </nav>
+
+        <div class="row">
+
             <form onsubmit="return false;" id="form">
-                <fieldset class="form_group" id="load_data">
-                    <div id="presets">
-                        <label class="form_header">Load</label>
+                <fieldset class="form-group">
 
-                        <button class="preset" id="preset_spsector" onclick='togglePreset("spsector")'>S&P 500 Sectors</button>
-                        <button class="preset" id="preset_industry" onclick='togglePreset("industry")'>Industry</button>
-                        <button class="preset" id="preset_international" onclick='togglePreset("international")'>International</button>
-                        <button class="preset" id="preset_25_1" onclick='togglePreset("25_1")'>25 Portfolios (1 Factor)</button>
-                        <button class="preset" id="preset_25_3" onclick='togglePreset("25_3")'>25 Portfolios (3 Factor)</button>
-                        <button class="preset" id="preset_25_4" onclick='togglePreset("25_4")'>25 Portfolios (4 Factor)</button>
-                        <button class="preset" id="preset_ff4" onclick='togglePreset("ff4")'>4 Factor</button>
+                    <div>
+                        <h5 for="">Load</h5>
+
+                        <div>
+                            <button class="preset btn btn-primary" id="preset_spsector" onclick='togglePreset("spsector")'>S&P 500 Sectors</button>
+                            <button class="preset btn btn-primary" id="preset_industry" onclick='togglePreset("industry")'>Industry</button>
+                            <button class="preset btn btn-primary" id="preset_international" onclick='togglePreset("international")'>International</button>
+                            <button class="preset btn btn-primary" id="preset_25_1" onclick='togglePreset("25_1")'>25 Portfolios (1 Factor)</button>
+                            <button class="preset btn btn-primary" id="preset_25_3" onclick='togglePreset("25_3")'>25 Portfolios (3 Factor)</button>
+                            <button class="preset btn btn-primary" id="preset_25_4" onclick='togglePreset("25_4")'>25 Portfolios (4 Factor)</button>
+                            <button class="preset btn btn-primary" id="preset_ff4" onclick='togglePreset("ff4")'>4 Factor</button>
+                        </div>
                     </div>
 
-                    <div id="load_or" class="form_header">Or</div>
+                    <br>
 
-                    <div id="upload">
-                        <label class="form_header" for="file">Upload</label>
-                        <input class="file_upload" type="file" name="file" id="file" accept=".csv"
-                            onchange="showFileName()" />
+                    <div>
+                        <h5 for="file">Upload</h5>
+                        <button class="btn btn-primary" onclick="openUploadDialogue()">Pick CSV File</button><label id="filename"></label>
 
-                        <button onclick="openUploadDialogue()">Click to Upload</button>
-                        <label id="filename"></label>
+                        <input style="display: none;" type="file" class="custom-file-input" name="file" id="file" accept=".csv" onchange="showFileName()" />
                     </div>
+
                 </fieldset>
 
-                <fieldset class="form_group" id="delim_type">
-                    <legend class="form_header">Delimiter Type</legend>
-                    <input type="radio" name="delim" value="comma" checked>Comma</input>
-                    <input type="radio" name="delim" value="space-tab">Space/Tab</input>
-                </fieldset>
+                <fieldset class="form-group">
 
-                <fieldset class="form_group">
-                    <label class="form_header" for="">Data Options</label>
-                    <div id="data_options" class="form_group_options">
-                        <!-- <input type="checkbox" name="format" value="log-scale">Log-Scale</input> -->
-                        <label for="">Date Format</label> <input type="text" name="date-format"
-                            placeholder="Default: Y-m-d" />
-                        <label for="">Risk Factor Column Position (0 Indexed, Multiple Positions)</label><input
-                            type="text" name="risk-factor" placeholder="Default: None" />
-                        <label for="">Risk Free Asset Column Position (0 Indexed, Only 1 Position)</label><input
-                            type="text" name="risk-free" placeholder="Default: 0" />
+                    <h5 for="delim">Delimiter Type</h5>
+
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio"  name="delim" value="comma" checked>
+                        <label class="form-check-label" for="flexRadioDefault1">Comma</label>
                     </div>
-                </fieldset>
-
-                <fieldset class="form_group">
-                    <label class="form_header" for="">Model Properties</label>
-                    <div id="model_properties" class="form_group_options">
-                        <label for="">Time Horizons</label> <input type="text" name="time-horizons"
-                            placeholder="ex: 60, 120">
-                        <label for="">Gamma Values</label> <input type="text" name="gammas" id="gammas"
-                            placeholder="ex: 1, 2, 3">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="delim" value="space-tab">
+                        <label class="form-check-label" for="flexRadioDefault2">Space/Tab</label>
                     </div>
+
+
                 </fieldset>
 
-                <fieldset class="form_group">
-                    <label class="form_header" for="">Date Range (Using Date Format)</label>
-                    <div id="date_range" class="form_group_options">
-                        <label for="">From</label><input type="text" name="date-range-start">
-                        <label for="">To</label><input type="text" name="date-range-end">
+                <fieldset class="form-group">
+
+                    <h5>Data Options</h5>
+
+                    <div>
+                        <label for="">
+                            Date Format
+                        
+                            <span data-bs-toggle="tooltip" data-bs-placement="right" data-bs-html="true" data-bs-toggle="tooltip"
+                            data-bs-title="
+                                <p>Y: 4 digit year</p>
+                                <p>y: 2 digit year</p>
+                                <p>m: month</p>
+                                <p>d: day</p>">
+                                <i class="fa-solid fa-circle-question"></i>
+                            </span>
+                        </label>
+                        <input type="text" class="form-control" name="date-format" placeholder="Default: Y-m-d" />
+                        
+                        <label for="">Risk Factor Asset Position (Multiple Positions; Position 1 is the First Asset)</label>
+                        <input type="text" class="form-control" name="risk-factor" placeholder="Default: None" />
+                        
+                        <label for="">Risk Free Asset Position (Only 1 Position)</label>
+                        <input type="text" class="form-control" name="risk-free" placeholder="Default: 1" />
                     </div>
+
                 </fieldset>
 
-                <fieldset class="form_group">
-                    <label class="form_header" for="">Select Models</label>
+                <fieldset class="form-group">
 
-                    <div id="models">
+                    <h5>Model Properties</h5>
 
-                        <div><input type="checkbox" name="model" value="1">Minimum-Variance</input></div>
-                        <div><input type="checkbox" name="model" value="2">Minimum-Varaince Shortsale
-                            Constraints</input></div>
-                        <div><input type="checkbox" name="model" value="3">Minimum-Varaince Generalized Constraints
-                            (Jagannathan Ma)</input></div>
-                        <div><input type="checkbox" name="model" value="4">Kan Zhou Equal Weighted</input></div>
-                        <div><input type="checkbox" name="model" value="5">Mean-Varaince (Markowitz)</input></div>
-                        <div><input type="checkbox" name="model" value="6">Mean-Variance Shortsale</input></div>
-                        <div><input type="checkbox" name="model" value="7">Kan Zhou (2007) "three-fund"</input></div>
-                        <div><input type="checkbox" name="model" value="8">Bayes-Stein</input></div>
-                        <div><input type="checkbox" name="model" value="9">Bayes-Stein Shortsale</input></div>
-                        <div><input type="checkbox" name="model" value="10">MacKinlay and Pastor’s (2000)</input></div>
-
+                    <div>
+                        <label for="">Time Horizons</label>
+                        <input type="text" class="form-control" name="time-horizons" placeholder="ex: 60, 120">
+                        
+                        <label for="">Gamma Values</label>
+                        <input type="text" class="form-control" name="gammas" id="gammas" placeholder="ex: 1, 2, 3">
                     </div>
+
                 </fieldset>
 
-                </fieldset class="form_group">
-                    <button onclick="handleFormSubmit()">Run</button>
+                <fieldset class="form-group">
+
+                    <h5>Date Range</h5>
+                    <p>Optional, using date format</p>
+
+                    <div class="row">
+                        <div class="col">
+                            <label for="">From</label>
+                            <input type="text" class="form-control" name="date-range-start">
+                        </div>
+                        
+                        <div class="col">
+                            <label for="">To</label>
+                            <input type="text" class="form-control" name="date-range-end">
+                        </div>
+                    </div>
+
                 </fieldset>
-            </form> <!-- form -->
 
-        </div> <!-- menu -->
+                <fieldset class="form-group">
 
-        <div id="results">
-            <table id="table_sharpes"></table>
-            <table id="table_signifs" style="margin-top: 50px;"></table>
-        </div> <!-- results -->
+                    <h5>Select Models</h5>
 
-    </div> <!-- container -->
+                    <div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="model" value="1">
+                            <label for="">Minimum-Variance</label>
+                        </div>
+
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="model" value="2">
+                            <label for="">Minimum-Varaince Shortsale Constraints</label>
+                        </div>
+                        
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="model" value="3">
+                            <label for="">Minimum-Varaince Generalized Constraints (Jagannathan Ma)</label>
+                        </div>
+
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="model" value="4">
+                            <label for="">Kan Zhou Equal Weighted</label>
+                        </div>
+
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="model" value="5">
+                            <label for="">Mean-Varaince (Markowitz)</label>
+                        </div>
+
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="model" value="6">
+                            <label for=""></label>Mean-Variance Shortsale
+                        </div>
+
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="model" value="7">
+                            <label for=""></label>Kan Zhou (2007) "three-fund
+                        </div>
+
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="model" value="8">
+                            <label for=""></label>Bayes-Stein
+                        </div>
+
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="model" value="9">
+                            <label for=""></label>Bayes-Stein Shortsale
+                        </div>
+
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="model" value="10">
+                            <label for="">MacKinlay and Pastor’s (2000)</label>
+                        </div>
+                    </div>
+
+                </fieldset>
+
+                <fieldset class="form-group">
+                    <button class="btn btn-primary" onclick="handleFormSubmit()">Run</button>
+                </fieldset>
+            </form>
+
+        </div> <!-- End of menu -->
+
+        <div class="row" id="results">
+            <table class="table" id="table_sharpes"></table>
+            <table class="table" id="table_signifs" style="margin-top: 50px;"></table>
+        </div> <!-- End of results -->
+
+    </div> <!-- End of container -->
+
+    <script>
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+          return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    </script>
 
     <script defer src="./src/libs/js/pyodide_0.22.1.js"></script>
     <script defer src="./src/libs/js/pyscript_2022.12.1.js"></script>
 
     <script defer src="./src/main.js"></script>
-
-    <script>
-        let loading = (showLoading) => {
-            if (showLoading) {
-                document.getElementById("loader").style.display = "block";
-                document.getElementById("container").style.opacity = "0.2";
-            } else {
-                document.getElementById("loader").style.display = "none";
-                document.getElementById("container").style.opacity = "1";
-            }
-        }
-    </script>
 
     <script defer>
         function createObject(object, variableName) {
@@ -180,11 +262,8 @@
             let execString = variableName + " = object"
             console.log("Running '" + execString + "'");
             eval(execString)
-
-            loading(false);
         }
     </script>
 
 </body>
-
 </html>
