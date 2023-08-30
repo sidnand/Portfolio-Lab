@@ -1,8 +1,20 @@
 {
-    "name": "Testing Portfolio Optimization Methods",
-    "short_name": "Portfolio Optimization",
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#ffffff"
-  }
-  
+  "name": "Portfolio Optimization Methods",
+  "short_name": "Portfolio Optimization ",
+  "start_url": "/",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "icons":[
+    {
+      "src":"./src/img/icons/192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src":"./src/img/icons/512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+
+}
