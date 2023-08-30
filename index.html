@@ -40,7 +40,7 @@
 </head>
 <body>
     
-    <div class="container">
+    <div class="container" style="opacity: 0.2;">
 
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
@@ -58,23 +58,11 @@
                         <i class="fa-solid fa-cube"></i>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" id="install">
-                        <i class="fa fa-download" aria-hidden="true"></i>
-                    </a>
-                </li>
             </ul>
         </div>
 
         </div>
     </nav>
-
-    <script>
-        // if ('serviceWorker' in navigator) {
-        //     // hide thr 3rd li element from class navbar-nav
-        //     document.getElementsByClassName("nav-item")[2].style.display = "none";
-        // }
-    </script>
 
         <div class="row">
 
@@ -261,34 +249,6 @@
             .catch(error => console.log("SW Registration Failed"));
         } else console.log("Not supported");
 
-        // Check if the browser supports the beforeinstallprompt event
-        window.addEventListener('beforeinstallprompt', (event) => {
-            // Prevent the default prompt from showing
-            event.preventDefault();
-
-            // Store the event for later use
-            const deferredPrompt = event;
-
-            // Wait for the user to interact with your website (e.g., click a button)
-            const installButton = document.getElementById('install');
-
-            installButton.addEventListener('click', () => {
-                // Show the install prompt
-                deferredPrompt.prompt();
-
-                // Wait for the user to respond to the prompt
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        console.log('User accepted the install prompt');
-                    } else {
-                        console.log('User dismissed the install prompt');
-                    }
-
-                    installButton.style.display = 'none';
-                });
-            });
-        });
-
         // Initialize tooltips
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -299,6 +259,18 @@
     <script defer src="./src/libs/js/pyodide_0.22.1.js"></script>
     <script defer src="./src/libs/js/pyscript_2022.12.1.js"></script>
 
+    <script>
+        let load = (x) => {
+            let container = document.getElementsByClassName('container')[0]
+
+            if (x) {
+                container.style.opacity = 0.2
+            } else {
+                container.style.opacity = 1
+            }
+        }
+    </script>
+
     <script defer src="./src/main.js"></script>
 
     <script defer>
@@ -308,6 +280,8 @@
             let execString = variableName + " = object"
             console.log("Running '" + execString + "'");
             eval(execString)
+        
+            load(false)
         }
     </script>
 
