@@ -252,6 +252,48 @@ let validate = (data) => {
 
 }
 
+let disablePreloadInputs = (x) => {
+
+    if (x) {
+
+        // disable all inputs except inputs with name = gammas, time-horizons, and model
+        let inputs = document.getElementsByTagName('input')
+        let selects = document.getElementsByTagName('select')
+    
+        for (let i = 0; i < inputs.length; i++) {
+            let input = inputs[i]
+            if (input.name != 'gammas' && input.name != 'time-horizons' && input.name != 'model' &&
+                input.name != 'date-range-start' && input.name != 'date-range-end' && input.name != 'file') {
+                input.disabled = true
+            }
+        }
+
+        for (let i = 0; i < selects.length; i++) {
+            let select = selects[i]
+            if (select.name != 'model') {
+                select.disabled = true
+            }
+        }
+
+    } else {
+            
+            // enable all inputs
+            let inputs = document.getElementsByTagName('input')
+            let selects = document.getElementsByTagName('select')
+        
+            for (let i = 0; i < inputs.length; i++) {
+                let input = inputs[i]
+                input.disabled = false
+            }
+    
+            for (let i = 0; i < selects.length; i++) {
+                let select = selects[i]
+                select.disabled = false
+            }
+    }
+
+}
+
 let run = (data) => {
     // convert data to json string
     let dataJson = JSON.stringify(data)
@@ -312,6 +354,7 @@ let togglePreset = (name) => {
 
     for (let i = 0; i < buttons.length; i++) {
         buttons[i].style.backgroundColor = "#0d6efd"
+        disablePreloadInputs(false)
     }
 
     let delimType = form.elements['delim']
@@ -387,6 +430,7 @@ let togglePreset = (name) => {
     if (selectedPreset == "") {
         activateButton.style.backgroundColor = "#020aab"
         selectedPreset = name
+        disablePreloadInputs(true)
     } else if (selectedPreset == name) {
         selectedPreset = ""
         riskFactor.value = ""
@@ -397,11 +441,13 @@ let togglePreset = (name) => {
     } else {
         activateButton.style.backgroundColor = "#020aab"
         selectedPreset = name
+        disablePreloadInputs(true)
     }
 }
 
 let openUploadDialogue = () => {
     document.getElementById('file').click()
+    disablePreloadInputs(false)
 
     let dateFormat = form.elements['date-format']
     let riskFactor = form.elements['risk-factor']
