@@ -40,7 +40,11 @@ let handleFormSubmit = () => {
         document.body.style.cursor = 'wait';
         
         if (file == undefined) {
-            data["selectedPreset"] = selectedPreset
+            if (selectedPreset == "spsector") {
+                let sp_sector_csv = getLocalData("sp_sector_csv")
+                data["fileData"] = sp_sector_csv
+            }
+            else data["selectedPreset"] = selectedPreset
 
             run(data)
         } else {
@@ -370,11 +374,17 @@ let togglePreset = (name) => {
     switch (name) {
 
         case "spsector":
+            let sp_sector_csv = getLocalData("sp_sector_csv")
+
+            let today = new Date();
+            // get the date as a string in format YYYYMMDD
+            let date = today.getFullYear() + "" + (today.getMonth() + 1) + "" + today.getDate();
+
             riskFactor.value = "7"
             riskFree.value = "1"
             dateFormat.value = "Ymd"
-            dateRangeStart.value = "19990101"
-            dateRangeEnd.value = "20201201"
+            dateRangeStart.value = "19940131"
+            dateRangeEnd.value = date
             break;
 
         case "industry":
@@ -595,4 +605,87 @@ function downloadCSVFile(csv_data) {
     // Automatically click the link to trigger download
     temp_link.click();
     document.body.removeChild(temp_link);
+}
+
+
+
+
+
+const startStr = "1994-01-01";
+const start = Math.floor(new Date(startStr).getTime() / 1000);
+
+const end = Math.floor(new Date().getTime() / 1000);
+
+
+const corsProxyUrl = 'https://corsproxy.io/';  // Replace with your actual CORS proxy URL
+
+const sp_sectors = {
+    "T_BILL_3_MO": "^IRX",
+    "SP_FINANCE": "^SP500-40",
+    "SP_ENEGY": "^GSPE",
+    "SP_MATERIALS": "^SP500-15",
+    "SP_CONSUM_DIS": "^SP500-25",
+    "SP_CONSUM_STAPLE": "^SP500-30",
+    "SP_HEALTH": "^SP500-35",
+    "SP_UTIL": "^SP500-55",
+    "SP_500": "^GSPC",
+    "SP_INFO_TECH": "^SP500-45",
+    "SP_TELE_COMM": "^SP500-50"
+}
+
+const headers = {
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+};
+
+function get_sp_sectors() {
+
+    let today = new Date();
+    let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+
+    let last_update = getLocalData("last_update")
+    if (last_update == date) return;
+
+    var all_data = {};
+    var fetchPromises = [];
+
+    Object.entries(sp_sectors).forEach(([key, value]) => {
+        let yahooFinanceUrl = `https://query1.finance.yahoo.com/v7/finance/download/${value}?period1=${start}&period2=${end}&interval=1d&events=history&includeAdjustedClose=true`;
+        let url = `${corsProxyUrl}?${yahooFinanceUrl}`;
+
+        const fetchPromise = fetch(url, {
+            method: 'GET',
+            headers: headers
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.text();
+            } else {
+                throw new Error(`Error: ${response.status}`);
+            }
+        })
+        .then(data => {
+            all_data[key] = data;
+        });
+
+        fetchPromises.push(fetchPromise);
+    });
+
+    Promise.all(fetchPromises)
+        .then(() => {
+            const all_data_json = JSON.stringify(all_data);
+            get_sp_sector = pyodideGlobals.get('get_sp_sector')
+            let sp_sector_csv = get_sp_sector(all_data_json)
+            storeLocalData("sp_sector_csv", sp_sector_csv)
+            storeLocalData("last_update", date)
+        })
+        .catch(error => console.error('Error fetching data:', error));
+
+}
+
+function storeLocalData(name, data) {
+    localStorage.setItem(name, JSON.stringify(data));
+}
+
+function getLocalData(name) {
+    return JSON.parse(localStorage.getItem(name));
 }
