@@ -88,7 +88,7 @@ def runModel(dataJson):
         }
     
     except Exception as e:
-        print(e)
+        return e
 
 
 def format(sr_dict, sig_dict, gammas):
