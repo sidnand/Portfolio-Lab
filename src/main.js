@@ -154,6 +154,11 @@ let validate = (data) => {
             }
         }
 
+        if (data['timeHorizons'].length < 2) {
+            alert("Must have at least 2 time horizons")
+            return false
+        }
+
         // if last element is 0, remove it
         if (data['timeHorizons'][data['timeHorizons'].length - 1] == 0) {
             data['timeHorizons'].pop()
@@ -494,13 +499,13 @@ function show(element, show) {
 
 let showResults = (gammas, data) => {
     tableSharpes.innerHTML = ""
-    tableSignifs.innerHTML = ""
+    // tableSignifs.innerHTML = ""
 
-    let captionSharpe = `<caption>Sharpe Ratios</caption>`
-    let captionSignif = `<caption>P-Values With Respect to Equal Weights Model</caption>`
+    // let captionSharpe = `<caption class="caption-bottom">Sharpe Ratios</caption>`
+    // let captionSignif = `<caption>P-Values With Respect to Equal Weights Model</caption>`
 
-    tableSharpes.innerHTML += captionSharpe
-    tableSignifs.innerHTML += captionSignif
+    // tableSharpes.innerHTML += captionSharpe
+    // tableSignifs.innerHTML += captionSignif
 
     // create header row
     let headerRow = `<tr><th>Models &darr; | Gammas &rarr;</th>`
@@ -514,37 +519,36 @@ let showResults = (gammas, data) => {
 
     // add header row to table
     tableSharpes.innerHTML += headerRow
-    tableSignifs.innerHTML += headerRow
+    // tableSignifs.innerHTML += headerRow
 
     // create data rows
     for (let key in data) {
         let rowSharpe = `<tr><td>${data[key]['name']}</td>`
-        let rowSignif = `<tr><td>${data[key]['name']}</td>`
+        // let rowSignif = `<tr><td>${data[key]['name']}</td>`
 
         for (let i = 0; i < data[key]['src'].length; i++) {
             let src = data[key]['src'][i].toFixed(3)
             let sig = data[key]['sig'][i].toFixed(3)
 
-            rowSharpe += `<td class="c">${src}</td>`
-            rowSignif += `<td class="c">${sig}</td>`
+            rowSharpe += `<td class="c">${src} (${sig})</td>`
+            // rowSignif += `<td class="c"></td>`
         }
 
         rowSharpe += "</tr>"
-        rowSignif += "</tr>"
+        // rowSignif += "</tr>"
 
         // add data rows to table
         tableSharpes.innerHTML += rowSharpe
-        tableSignifs.innerHTML += rowSignif
+        // tableSignifs.innerHTML += rowSignif
     }
 
     // underneath tableSharpes, add a button
 
     // add button to export table to csv at the bottom of the table
     tableSharpes.innerHTML += `<tr><td><button style="width: 200px" class="btn btn-primary" onclick="tableToCSV('sharpe')">Download</button></td></tr>`
-    tableSignifs.innerHTML += `<tr><td><button style="width: 200px" class="btn btn-primary" onclick="tableToCSV('signif')">Download</button></td></tr>`
+    tableSharpes.innerHTML += `<caption>Sharpe Ratio (P-Value)</caption>`
+    // tableSignifs.innerHTML += `<tr><td><button style="width: 200px" class="btn btn-primary" onclick="tableToCSV('signif')">Download</button></td></tr>`
 }
-
-// The below code is from: https://www.geeksforgeeks.org/how-to-export-html-table-to-csv-using-javascript/
 
 function tableToCSV(tableName) {
 
