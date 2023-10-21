@@ -32,9 +32,7 @@
         "./data/new/processed/25_portfolios_4_factor.csv",
         "./data/new/processed/ff_4_factor.csv",
         "./data/new/processed/industry.csv",
-        "./data/new/processed/international_factor.csv",
-        "./data/new/processed/spsector.csv",
-        "./data/last_update.txt"]
+        "./data/new/processed/international_factor.csv"]
     </py-config>
 
     <py-script src="./src/py/main.py"></py-script>
@@ -148,7 +146,7 @@
                         <input type="text" class="form-control" name="time-horizons" placeholder="ex: 60, 120">
                         
                         <label for="">Gamma Values</label>
-                        <input type="text" class="form-control" name="gammas" id="gammas" placeholder="(0, 10])">
+                        <input type="text" class="form-control" name="gammas" id="gammas" placeholder="0 < gamma <= 10">
                     </div>
 
                 </fieldset>
