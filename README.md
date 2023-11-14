@@ -18,6 +18,8 @@ This is a tool to test the out-of-sample performance using the Sharpe ratio of d
 
 ## Data
 
+### Locations
+
 ``` bash
     data/old # contains old data from original paper
 
@@ -26,3 +28,10 @@ This is a tool to test the out-of-sample performance using the Sharpe ratio of d
     data/new/pre_processed/<category>.csv # contains new preprocessed data; combined all .csv files in clean/<category>
     data/new/processed/<category>.csv # contains new processed data; 
 ```
+
+### Sources
+
+* [Ken French's Data Library](http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html)
+    * 25 Portfolios Formed on Size and Book-to-Market (5 x 5)
+    * 10 Industry Portfolios
+    * Fama/French Developed 3 Factors
