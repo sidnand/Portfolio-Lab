@@ -21,6 +21,12 @@ let ui_init = () => {
 let set_server_url = () => {
     let server_url_input = document.getElementById('server_url')
     server_url = server_url_input.value
+    
+    if (!server_url.includes('http://') || !server_url.includes('https://')) {
+        server_url = 'http://' + server_url
+        server_url_input.value = server_url
+    }
+    
     localStorage.setItem('server_url', server_url)
 }
 
