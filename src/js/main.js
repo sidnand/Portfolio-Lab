@@ -1,5 +1,21 @@
 let selectedPreset = ""
 
+// type: sp_sector
+let fetch_data = (type) => {
+    fetch(server_url + '/' + type)
+        .then(response => {
+            if (response.status === 200) {
+                return response.json();
+            } else {
+                throw new Error('Failed to fetch data');
+            }
+        })
+        .then(data => {
+            return data
+        })
+        .catch(error => console.error(error));
+}
+
 let run = (data) => {
     // convert data to json string
     let dataJson = JSON.stringify(data)
