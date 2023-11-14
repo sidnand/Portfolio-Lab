@@ -40,11 +40,7 @@ let handleFormSubmit = () => {
         document.body.style.cursor = 'wait';
         
         if (file == undefined) {
-            if (selectedPreset == "spsector") {
-                let sp_sector_csv = getLocalData("sp_sector_csv")
-                data["fileData"] = sp_sector_csv
-            }
-            else data["selectedPreset"] = selectedPreset
+            data["selectedPreset"] = selectedPreset
 
             run(data)
         } else {
@@ -105,6 +101,7 @@ let validate = (data) => {
             }
         }
 
+        // check if y, m, or d is in the date format. there can only be 1 of each
         if (yCount + mCount + dCount == 0) {
             alert("Date format must contain at least one of y, m, or d")
             return false
@@ -379,17 +376,11 @@ let togglePreset = (name) => {
     switch (name) {
 
         case "spsector":
-            let sp_sector_csv = getLocalData("sp_sector_csv")
-
-            let today = new Date();
-            // get the date as a string in format YYYYMMDD
-            let date = today.getFullYear() + "" + (today.getMonth() + 1) + "" + today.getDate();
-
             riskFactor.value = "7"
             riskFree.value = "1"
             dateFormat.value = "Ymd"
             dateRangeStart.value = "19940131"
-            dateRangeEnd.value = date
+            dateRangeEnd.value = "20201201"
             break;
 
         case "industry":
@@ -499,13 +490,6 @@ function show(element, show) {
 
 let showResults = (gammas, data) => {
     tableSharpes.innerHTML = ""
-    // tableSignifs.innerHTML = ""
-
-    // let captionSharpe = `<caption class="caption-bottom">Sharpe Ratios</caption>`
-    // let captionSignif = `<caption>P-Values With Respect to Equal Weights Model</caption>`
-
-    // tableSharpes.innerHTML += captionSharpe
-    // tableSignifs.innerHTML += captionSignif
 
     // create header row
     let headerRow = `<tr><th>Models &darr; | Gammas &rarr;</th>`
@@ -519,35 +503,27 @@ let showResults = (gammas, data) => {
 
     // add header row to table
     tableSharpes.innerHTML += headerRow
-    // tableSignifs.innerHTML += headerRow
 
     // create data rows
     for (let key in data) {
         let rowSharpe = `<tr><td>${data[key]['name']}</td>`
-        // let rowSignif = `<tr><td>${data[key]['name']}</td>`
 
         for (let i = 0; i < data[key]['src'].length; i++) {
             let src = data[key]['src'][i].toFixed(3)
             let sig = data[key]['sig'][i].toFixed(3)
 
             rowSharpe += `<td class="c">${src} (${sig})</td>`
-            // rowSignif += `<td class="c"></td>`
         }
 
         rowSharpe += "</tr>"
-        // rowSignif += "</tr>"
 
         // add data rows to table
         tableSharpes.innerHTML += rowSharpe
-        // tableSignifs.innerHTML += rowSignif
     }
-
-    // underneath tableSharpes, add a button
 
     // add button to export table to csv at the bottom of the table
     tableSharpes.innerHTML += `<tr><td><button style="width: 200px" class="btn btn-primary" onclick="tableToCSV('sharpe')">Download</button></td></tr>`
     tableSharpes.innerHTML += `<caption>Sharpe Ratio (P-Value)</caption>`
-    // tableSignifs.innerHTML += `<tr><td><button style="width: 200px" class="btn btn-primary" onclick="tableToCSV('signif')">Download</button></td></tr>`
 }
 
 function tableToCSV(tableName) {
@@ -611,80 +587,6 @@ function downloadCSVFile(csv_data) {
     document.body.removeChild(temp_link);
 }
 
-
-
-
-
-const startStr = "1994-01-01";
-const start = Math.floor(new Date(startStr).getTime() / 1000);
-
-const end = Math.floor(new Date().getTime() / 1000);
-
-
-const corsProxyUrl = 'https://corsproxy.io/';  // Replace with your actual CORS proxy URL
-
-const sp_sectors = {
-    "T_BILL_3_MO": "^IRX",
-    "SP_FINANCE": "^SP500-40",
-    "SP_ENEGY": "^GSPE",
-    "SP_MATERIALS": "^SP500-15",
-    "SP_CONSUM_DIS": "^SP500-25",
-    "SP_CONSUM_STAPLE": "^SP500-30",
-    "SP_HEALTH": "^SP500-35",
-    "SP_UTIL": "^SP500-55",
-    "SP_500": "^GSPC",
-    "SP_INFO_TECH": "^SP500-45",
-    "SP_TELE_COMM": "^SP500-50"
-}
-
-const headers = {
-  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
-};
-
-function get_sp_sectors() {
-
-    let today = new Date();
-    let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-
-    let last_update = getLocalData("last_update")
-    if (last_update == date) return;
-
-    var all_data = {};
-    var fetchPromises = [];
-
-    Object.entries(sp_sectors).forEach(([key, value]) => {
-        let yahooFinanceUrl = `https://query1.finance.yahoo.com/v7/finance/download/${value}?period1=${start}&period2=${end}&interval=1d&events=history&includeAdjustedClose=true`;
-        let url = `${corsProxyUrl}?${yahooFinanceUrl}`;
-
-        const fetchPromise = fetch(url, {
-            method: 'GET',
-            headers: headers
-        })
-        .then(response => {
-            if (response.ok) {
-                return response.text();
-            } else {
-                throw new Error(`Error: ${response.status}`);
-            }
-        })
-        .then(data => {
-            all_data[key] = data;
-        });
-
-        fetchPromises.push(fetchPromise);
-    });
-
-    Promise.all(fetchPromises)
-        .then(() => {
-            const all_data_json = JSON.stringify(all_data);
-            get_sp_sector = pyodideGlobals.get('get_sp_sector')
-            let sp_sector_csv = get_sp_sector(all_data_json)
-            storeLocalData("sp_sector_csv", sp_sector_csv)
-            storeLocalData("last_update", date)
-        })
-        .catch(error => console.error('Error fetching data:', error));
-
-}
 
 function storeLocalData(name, data) {
     localStorage.setItem(name, JSON.stringify(data));
