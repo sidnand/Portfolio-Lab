@@ -35,9 +35,24 @@ let handleFormSubmit = () => {
         document.body.style.cursor = 'wait';
         
         if (file == undefined) {
-            data["selectedPreset"] = selectedPreset
-
-            run(data)
+            if (server_url == "") {
+                data["selectedPreset"] = selectedPreset
+                run(data)
+            } else {
+                fetch(server_url + '/' + selectedPreset)
+                    .then(response => {
+                        if (response.status === 200) {
+                            return response.json();
+                        } else {
+                            throw new Error('Failed to fetch data');
+                        }
+                    })
+                    .then(json => {
+                        data["fileData"] = json
+                        run(data)
+                    })
+                    .catch(error => console.error(error));
+            }
         } else {
             let reader = new FileReader()
             reader.readAsText(file, "UTF-8")

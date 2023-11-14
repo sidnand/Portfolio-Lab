@@ -22,11 +22,6 @@ let set_server_url = () => {
     let server_url_input = document.getElementById('server_url')
     server_url = server_url_input.value
     
-    if (!server_url.includes('http://') || !server_url.includes('https://')) {
-        server_url = 'http://' + server_url
-        server_url_input.value = server_url
-    }
-    
     localStorage.setItem('server_url', server_url)
 }
 
@@ -211,7 +206,7 @@ let disablePreloadInputs = (x) => {
         for (let i = 0; i < inputs.length; i++) {
             let input = inputs[i]
             if (input.name != 'gammas' && input.name != 'time-horizons' && input.name != 'model' &&
-                input.name != 'date-range-start' && input.name != 'date-range-end' && input.name != 'file') {
+                input.name != 'date-range-start' && input.name != 'date-range-end' && input.name != 'file' && input.name != 'server_url') {
                 input.disabled = true
             }
         }
