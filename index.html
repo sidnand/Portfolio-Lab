@@ -244,33 +244,18 @@
 
     </div> <!-- End of container -->
 
-    <script>
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl)
-        });
-
-        let load = (x) => {
-            let container = document.getElementsByClassName('container')[0]
-
-            if (x) {
-                container.style.opacity = 0.2
-            } else {
-                container.style.opacity = 1
-            }
-        }
-    </script>
-
-    <script src="./src/main.js"></script>
+    <script src="./src/js/ui.js"></script>
+    <script src="./src/js/util.js"></script>
+    <script src="./src/js/form.js"></script>
+    <script src="./src/js/main.js"></script>
 
     <script defer>
         function createObject(object, variableName) {
             let execString = variableName + " = object"
             console.log("Running '" + execString + "'");
             eval(execString)
-        
-            // get_sp_sectors()
-            load(false)
+
+            loading_screen(false)
         }
     </script>
 
