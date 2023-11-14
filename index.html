@@ -28,12 +28,14 @@
         ]
 
         [[fetch]]
-        files = ["./data/new/processed/25_portfolios_1_factor.csv",
-        "./data/new/processed/25_portfolios_3_factor.csv",
-        "./data/new/processed/25_portfolios_4_factor.csv",
-        "./data/new/processed/ff_4_factor.csv",
-        "./data/new/processed/industry.csv",
-        "./data/new/processed/international_factor.csv"]
+        files = ["./data/new/processed/spsector.csv",
+            "./data/new/processed/25_portfolios_1_factor.csv",
+            "./data/new/processed/25_portfolios_3_factor.csv",
+            "./data/new/processed/25_portfolios_4_factor.csv",
+            "./data/new/processed/ff_4_factor.csv",
+            "./data/new/processed/industry.csv",
+            "./data/new/processed/international_factor.csv"
+        ]
     </py-config>
 
     <py-script src="./src/py/main.py"></py-script>
@@ -247,9 +249,7 @@
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl)
         });
-    </script>
 
-    <script>
         let load = (x) => {
             let container = document.getElementsByClassName('container')[0]
 
@@ -261,7 +261,7 @@
         }
     </script>
 
-    <script defer src="./src/main.js"></script>
+    <script src="./src/main.js"></script>
 
     <script defer>
         function createObject(object, variableName) {
@@ -269,7 +269,7 @@
             console.log("Running '" + execString + "'");
             eval(execString)
         
-            get_sp_sectors()
+            // get_sp_sectors()
             load(false)
         }
     </script>
