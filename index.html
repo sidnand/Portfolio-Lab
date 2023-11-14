@@ -1,70 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Portfolio Optimization Methods</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
 
     <link rel="stylesheet" type="text/css" href="./src/main.css" />
     <link rel="stylesheet" href="./src/libs/css/pyscript_2022.12.1.css" />
 
     <script src="https://unpkg.com/@popperjs/core@2"></script>
     <script src="https://kit.fontawesome.com/65dc67808d.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+        crossorigin="anonymous"></script>
 
     <script defer src="./src/libs/js/pyodide_0.22.1.js"></script>
     <script defer src="./src/libs/js/pyscript_2022.12.1.js"></script>
 
     <py-config>
         packages = [
-            "qpsolvers==2.8.1",
-            "pandas",
-            "numpy",
-            "./src/libs/wheels/quadprog-0.1.11-cp310-cp310-emscripten_3_1_27_wasm32.whl",
-            "./src/libs/wheels/portfolioperformance-1.0.0-py3-none-any.whl",
+        "qpsolvers==2.8.1",
+        "pandas",
+        "numpy",
+        "./src/libs/wheels/quadprog-0.1.11-cp310-cp310-emscripten_3_1_27_wasm32.whl",
+        "./src/libs/wheels/portfolioperformance-1.0.0-py3-none-any.whl",
         ]
 
         [[fetch]]
         files = ["./data/new/processed/spsector.csv",
-            "./data/new/processed/25_portfolios_1_factor.csv",
-            "./data/new/processed/25_portfolios_3_factor.csv",
-            "./data/new/processed/25_portfolios_4_factor.csv",
-            "./data/new/processed/ff_4_factor.csv",
-            "./data/new/processed/industry.csv",
-            "./data/new/processed/international_factor.csv"
+        "./data/new/processed/25_portfolios_1_factor.csv",
+        "./data/new/processed/25_portfolios_3_factor.csv",
+        "./data/new/processed/25_portfolios_4_factor.csv",
+        "./data/new/processed/ff_4_factor.csv",
+        "./data/new/processed/industry.csv",
+        "./data/new/processed/international_factor.csv"
         ]
     </py-config>
 
     <py-script src="./src/py/main.py"></py-script>
 </head>
+
 <body>
-    
+
     <div class="container" style="opacity: 0.2;">
 
-    <nav class="navbar navbar-expand-lg">
-        <div class="container-fluid">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
 
-        <h1>Portfolio Optimization Methods</h1>
-        <div class="d-flex">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link" href="https://github.com/sidnand/Portfolio-Optimization-Interface" target="_blank">
-                        <i class="fa-brands fa-github"></i>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="https://pypi.org/project/portfolioperformance/" target="_blank">
-                        <i class="fa-solid fa-cube"></i>
-                    </a>
-                </li>
-            </ul>
-        </div>
+                <h1>Portfolio Optimization Methods</h1>
+                <div class="d-flex">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <input type="text" id="server_url" class="form-control" width="200px" placeholder="Server URL" onblur="set_server_url()">
+                        </li>
 
-        </div>
-    </nav>
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://github.com/sidnand/Portfolio-Optimization-Interface"
+                                target="_blank">
+                                <i class="fa-brands fa-github"></i>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://pypi.org/project/portfolioperformance/" target="_blank">
+                                <i class="fa-solid fa-cube"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </nav>
 
         <div class="row">
 
@@ -75,13 +86,20 @@
                         <h5 for="">Load</h5>
 
                         <div>
-                            <button class="preset btn btn-primary" id="preset_spsector" onclick='togglePreset("spsector")'>S&P 500 Sectors</button>
-                            <button class="preset btn btn-primary" id="preset_industry" onclick='togglePreset("industry")'>Industry</button>
-                            <button class="preset btn btn-primary" id="preset_international" onclick='togglePreset("international")'>International</button>
-                            <button class="preset btn btn-primary" id="preset_25_1" onclick='togglePreset("25_1")'>25 Portfolios (1 Factor)</button>
-                            <button class="preset btn btn-primary" id="preset_25_3" onclick='togglePreset("25_3")'>25 Portfolios (3 Factor)</button>
-                            <button class="preset btn btn-primary" id="preset_25_4" onclick='togglePreset("25_4")'>25 Portfolios (4 Factor)</button>
-                            <button class="preset btn btn-primary" id="preset_ff4" onclick='togglePreset("ff4")'>4 Factor</button>
+                            <button class="preset btn btn-primary" id="preset_spsector"
+                                onclick='togglePreset("spsector")'>S&P 500 Sectors</button>
+                            <button class="preset btn btn-primary" id="preset_industry"
+                                onclick='togglePreset("industry")'>Industry</button>
+                            <button class="preset btn btn-primary" id="preset_international"
+                                onclick='togglePreset("international")'>International</button>
+                            <button class="preset btn btn-primary" id="preset_25_1" onclick='togglePreset("25_1")'>25
+                                Portfolios (1 Factor)</button>
+                            <button class="preset btn btn-primary" id="preset_25_3" onclick='togglePreset("25_3")'>25
+                                Portfolios (3 Factor)</button>
+                            <button class="preset btn btn-primary" id="preset_25_4" onclick='togglePreset("25_4")'>25
+                                Portfolios (4 Factor)</button>
+                            <button class="preset btn btn-primary" id="preset_ff4" onclick='togglePreset("ff4")'>4
+                                Factor</button>
                         </div>
                     </div>
 
@@ -89,9 +107,11 @@
 
                     <div>
                         <h5 for="file">Upload</h5>
-                        <button class="btn btn-primary" onclick="openUploadDialogue()">Pick CSV File</button><label id="filename"></label>
+                        <button class="btn btn-primary" onclick="openUploadDialogue()">Pick CSV File</button><label
+                            id="filename"></label>
 
-                        <input style="display: none;" type="file" class="custom-file-input" name="file" id="file" accept=".csv" onchange="showFileName()" />
+                        <input style="display: none;" type="file" class="custom-file-input" name="file" id="file"
+                            accept=".csv" onchange="showFileName()" />
                     </div>
 
                 </fieldset>
@@ -101,7 +121,7 @@
                     <h5 for="delim">Delimiter Type</h5>
 
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio"  name="delim" value="comma" checked>
+                        <input class="form-check-input" type="radio" name="delim" value="comma" checked>
                         <label class="form-check-label" for="flexRadioDefault1">Comma</label>
                     </div>
                     <div class="form-check form-check-inline">
@@ -119,20 +139,22 @@
                     <div>
                         <label for="">
                             Date Format
-                        
+
                             <span data-bs-toggle="tooltip" data-bs-html="true" title="
                                 <p>Y: 4 digit year</p>
                                 <p>y: 2 digit year</p>
                                 <p>m: month</p>
                                 <p>d: day</p>">
-                                <i class="fa-solid fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="right"></i>
+                                <i class="fa-solid fa-circle-question" data-bs-toggle="tooltip"
+                                    data-bs-placement="right"></i>
                             </span>
                         </label>
                         <input type="text" class="form-control" name="date-format" placeholder="Default: Y-m-d" />
-                        
-                        <label for="">Risk Factor Asset Position (Multiple Positions; Position 1 is the First Asset)</label>
+
+                        <label for="">Risk Factor Asset Position (Multiple Positions; Position 1 is the First
+                            Asset)</label>
                         <input type="text" class="form-control" name="risk-factor" placeholder="Default: None" />
-                        
+
                         <label for="">Risk Free Asset Position (Only 1 Position)</label>
                         <input type="text" class="form-control" name="risk-free" placeholder="Default: 1" />
                     </div>
@@ -145,8 +167,9 @@
 
                     <div>
                         <label for="">Time Horizons</label>
-                        <input type="text" class="form-control" name="time-horizons" placeholder="2 Values Minimum, ex: 60, 120">
-                        
+                        <input type="text" class="form-control" name="time-horizons"
+                            placeholder="2 Values Minimum, ex: 60, 120">
+
                         <label for="">Gamma Values</label>
                         <input type="text" class="form-control" name="gammas" id="gammas" placeholder="0 < gamma <= 10">
                     </div>
@@ -163,7 +186,7 @@
                             <label for="">From</label>
                             <input type="text" class="form-control" name="date-range-start">
                         </div>
-                        
+
                         <div class="col">
                             <label for="">To</label>
                             <input type="text" class="form-control" name="date-range-end">
@@ -186,7 +209,7 @@
                             <input type="checkbox" class="form-check-input" name="model" value="2">
                             <label for="">Minimum-Varaince Shortsale Constraints</label>
                         </div>
-                        
+
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" name="model" value="3">
                             <label for="">Minimum-Varaince Generalized Constraints (Jagannathan Ma)</label>
@@ -244,8 +267,8 @@
 
     </div> <!-- End of container -->
 
-    <script src="./src/js/ui.js"></script>
     <script src="./src/js/util.js"></script>
+    <script src="./src/js/ui.js"></script>
     <script src="./src/js/form.js"></script>
     <script src="./src/js/main.js"></script>
 
@@ -254,10 +277,13 @@
             let execString = variableName + " = object"
             console.log("Running '" + execString + "'");
             eval(execString)
+        }
 
+        window.onload = () => {
             loading_screen(false)
         }
     </script>
 
 </body>
+
 </html>

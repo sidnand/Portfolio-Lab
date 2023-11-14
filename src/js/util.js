@@ -1,9 +1,10 @@
 function storeLocalData(name, data) {
-    localStorage.setItem(name, JSON.stringify(data));
+    localStorage.setItem(name, data);
+    console.log("Stored " + name + " in local storage");
 }
 
 function getLocalData(name) {
-    return JSON.parse(localStorage.getItem(name));
+    return localStorage.getItem(name);
 }
 
 function tableToCSV(tableName) {

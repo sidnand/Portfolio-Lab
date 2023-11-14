@@ -1,13 +1,27 @@
 let tableSharpes = document.getElementById('table_sharpes')
 let tableSignifs = document.getElementById('table_signifs')
+let server_url = ""
+
+document.addEventListener('DOMContentLoaded', function() {
+    if (localStorage.getItem('server_url') !== null) {
+        server_url = localStorage.getItem('server_url');
+        let server_url_input = document.getElementById('server_url');
+        server_url_input.value = server_url;
+    }
+});
 
 let ui_init = () => {
-
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl)
     });
 
+}
+
+let set_server_url = () => {
+    let server_url_input = document.getElementById('server_url')
+    server_url = server_url_input.value
+    localStorage.setItem('server_url', server_url)
 }
 
 let togglePreset = (name) => {
