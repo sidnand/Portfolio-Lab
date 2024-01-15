@@ -57,7 +57,7 @@ let togglePreset = (name) => {
             riskFree.value = "1"
             dateFormat.value = "Ymd"
             dateRangeStart.value = "19940131"
-            dateRangeEnd.value = "20201201"
+            dateRangeEnd.value = new Date().toISOString().slice(0, 10).replace(/-/g, "")
             break;
 
         case "industry":
@@ -65,15 +65,15 @@ let togglePreset = (name) => {
             riskFree.value = "1"
             dateFormat.value = "Ym"
             dateRangeStart.value = "199901"
-            dateRangeEnd.value = "202012"
+            dateRangeEnd.value = new Date().toISOString().slice(0, 7).replace(/-/g, "")
             break;
 
         case "international":
             riskFactor.value = "10"
             riskFree.value = "1"
-            dateFormat.value = "d-m-Y"
-            dateRangeStart.value = "29-01-1999"
-            dateRangeEnd.value = "31-12-2019"
+            dateFormat.value = "Ym"
+            dateRangeStart.value = "199901"
+            dateRangeEnd.value = new Date().toISOString().slice(0, 7).replace(/-/g, "")
             break;
 
         case "25_1":
@@ -81,7 +81,7 @@ let togglePreset = (name) => {
             riskFree.value = "1"
             dateFormat.value = "Ym"
             dateRangeStart.value = "199901"
-            dateRangeEnd.value = "202012"
+            dateRangeEnd.value = new Date().toISOString().slice(0, 7).replace(/-/g, "")
             break;
 
         case "25_3":
@@ -89,7 +89,7 @@ let togglePreset = (name) => {
             riskFree.value = "1"
             dateFormat.value = "Ym"
             dateRangeStart.value = "199901"
-            dateRangeEnd.value = "202012"
+            dateRangeEnd.value = new Date().toISOString().slice(0, 7).replace(/-/g, "")
             break;
 
         case "25_4":
@@ -97,7 +97,7 @@ let togglePreset = (name) => {
             riskFree.value = "1"
             dateFormat.value = "Ym"
             dateRangeStart.value = "199901"
-            dateRangeEnd.value = "202012"
+            dateRangeEnd.value = new Date().toISOString().slice(0, 7).replace(/-/g, "")
             break;
 
         case "ff4":
@@ -105,7 +105,7 @@ let togglePreset = (name) => {
             riskFree.value = "4"
             dateFormat.value = "Ym"
             dateRangeStart.value = "199901"
-            dateRangeEnd.value = "202012"
+            dateRangeEnd.value = new Date().toISOString().slice(0, 7).replace(/-/g, "")
             break;
 
     }
