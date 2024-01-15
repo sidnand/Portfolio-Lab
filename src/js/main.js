@@ -1,7 +1,6 @@
 let selectedPreset = ""
 
 let run = (data) => {
-    // convert data to json string
     let dataJson = JSON.stringify(data)
 
     runModel = pyodideGlobals.get('runModel')
