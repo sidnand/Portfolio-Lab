@@ -20,7 +20,7 @@ models = [
     MinVar("Minimum Variance"),
     JagannathanMa("Jagannathan Ma"),
     MinVarShortSellCon("Minimum Variance with Short Sell Constraints"),
-    KanZhouEw("Kan Zhou EW"),
+    KanZhouEw("Kan Zhou Equal Weighted"),
     MeanVar("Mean Variance (Markowitz)"),
     MeanVarShortSellCon("Mean Variance with Short Sell Constraints"),
     KanZhou("Kan Zhou Three Fund"),

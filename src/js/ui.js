@@ -1,5 +1,6 @@
 let tableSharpes = document.getElementById('table_sharpes')
 let tableSignifs = document.getElementById('table_signifs')
+let results_header = document.getElementById('results-header')
 let server_url = ""
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -8,15 +9,18 @@ document.addEventListener('DOMContentLoaded', function() {
         let server_url_input = document.getElementById('server_url');
         server_url_input.value = server_url;
     }
-});
 
-let ui_init = () => {
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl)
+    var allCheckbox = document.getElementById('toggle-all-models');
+    var otherCheckboxes = document.querySelectorAll('[name="model"]');
+
+    allCheckbox.addEventListener('change', function () {
+        is_checked = allCheckbox.checked
+
+        otherCheckboxes.forEach(function (checkbox) {
+            checkbox.checked = is_checked
+        });
     });
-
-}
+});
 
 let set_server_url = () => {
     let server_url_input = document.getElementById('server_url')
@@ -50,6 +54,8 @@ let togglePreset = (name) => {
     delimType.value = "comma"
     delimType.checked = true
 
+    now_ym = new Date().toISOString().slice(0, 7).replace(/-/g, "")
+
     switch (name) {
 
         case "spsector":
@@ -57,7 +63,7 @@ let togglePreset = (name) => {
             riskFree.value = "1"
             dateFormat.value = "Ymd"
             dateRangeStart.value = "19940131"
-            dateRangeEnd.value = new Date().toISOString().slice(0, 10).replace(/-/g, "")
+            dateRangeEnd.value = server_url == "" ? "20240229" : new Date().toISOString().slice(0, 10).replace(/-/g, "")
             break;
 
         case "industry":
@@ -65,7 +71,7 @@ let togglePreset = (name) => {
             riskFree.value = "1"
             dateFormat.value = "Ym"
             dateRangeStart.value = "199901"
-            dateRangeEnd.value = new Date().toISOString().slice(0, 7).replace(/-/g, "")
+            dateRangeEnd.value = server_url == "" ? "202012" : now_ym
             break;
 
         case "international":
@@ -73,7 +79,7 @@ let togglePreset = (name) => {
             riskFree.value = "1"
             dateFormat.value = "Ym"
             dateRangeStart.value = "199901"
-            dateRangeEnd.value = new Date().toISOString().slice(0, 7).replace(/-/g, "")
+            dateRangeEnd.value = server_url == "" ? "201912" : now_ym
             break;
 
         case "25_1":
@@ -81,7 +87,7 @@ let togglePreset = (name) => {
             riskFree.value = "1"
             dateFormat.value = "Ym"
             dateRangeStart.value = "199901"
-            dateRangeEnd.value = new Date().toISOString().slice(0, 7).replace(/-/g, "")
+            dateRangeEnd.value = server_url == "" ? "202012" : now_ym
             break;
 
         case "25_3":
@@ -89,7 +95,7 @@ let togglePreset = (name) => {
             riskFree.value = "1"
             dateFormat.value = "Ym"
             dateRangeStart.value = "199901"
-            dateRangeEnd.value = new Date().toISOString().slice(0, 7).replace(/-/g, "")
+            dateRangeEnd.value = server_url == "" ? "202012" : now_ym
             break;
 
         case "25_4":
@@ -97,7 +103,7 @@ let togglePreset = (name) => {
             riskFree.value = "1"
             dateFormat.value = "Ym"
             dateRangeStart.value = "199901"
-            dateRangeEnd.value = new Date().toISOString().slice(0, 7).replace(/-/g, "")
+            dateRangeEnd.value = server_url == "" ? "202012" : now_ym
             break;
 
         case "ff4":
@@ -105,7 +111,7 @@ let togglePreset = (name) => {
             riskFree.value = "4"
             dateFormat.value = "Ym"
             dateRangeStart.value = "199901"
-            dateRangeEnd.value = new Date().toISOString().slice(0, 7).replace(/-/g, "")
+            dateRangeEnd.value = server_url == "" ? "202012" : now_ym
             break;
 
     }
@@ -192,23 +198,25 @@ let showResults = (gammas, data) => {
 
     // add button to export table to csv at the bottom of the table
     tableSharpes.innerHTML += `<tr><td><button style="width: 200px" class="btn btn-primary" onclick="tableToCSV('sharpe')">Download</button></td></tr>`
-    tableSharpes.innerHTML += `<caption>Sharpe Ratio (P-Value)</caption>`
+    results_header.style.display = "block"
 }
 
 let disablePreloadInputs = (x) => {
 
     if (x) {
 
-        // disable all inputs except inputs with name = gammas, time-horizons, and model
         let inputs = document.getElementsByTagName('input')
         let selects = document.getElementsByTagName('select')
     
         for (let i = 0; i < inputs.length; i++) {
             let input = inputs[i]
-            if (input.name != 'gammas' && input.name != 'time-horizons' && input.name != 'model' &&
-                input.name != 'date-range-start' && input.name != 'date-range-end' && input.name != 'file' && input.name != 'server_url') {
-                input.disabled = true
-            }
+            // if (input.name != 'gammas' && input.name != 'time-horizons' && input.name != 'model' &&
+            //     input.name != 'date-range-start' && input.name != 'date-range-end' && input.name != 'file' && input.name != 'server_url') {
+            //     input.disabled = true
+            // }
+
+            if (input.name == 'delim' || input.name == 'date-format' ||
+                input.name == 'risk-factor' || input.name == 'risk-free') input.disabled = true
         }
 
         for (let i = 0; i < selects.length; i++) {
@@ -235,14 +243,4 @@ let disablePreloadInputs = (x) => {
             }
     }
 
-}
-
-let loading_screen = (x) => {
-    let container = document.getElementsByClassName('container')[0]
-
-    if (x) {
-        container.style.opacity = 0.2
-    } else {
-        container.style.opacity = 1
-    }
 }

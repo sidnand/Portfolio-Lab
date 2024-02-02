@@ -46,7 +46,3 @@ let run = (data) => {
         return
     }
 }
-
-window.onload = () => {
-    ui_init();
-}
