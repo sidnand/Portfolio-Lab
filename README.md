@@ -4,7 +4,7 @@ This is a tool to test the out-of-sample performance using the Sharpe ratio of d
 
 ## Models Built-in
 
-* Equal weighted model
+* Equal weighted model (Benchmark)
 * Minimum-variance
 * Minimum-varaince with shortsale constraints model
 * Minimum-varaince with generalized constraints (Jagannathan Ma) model
@@ -14,7 +14,7 @@ This is a tool to test the out-of-sample performance using the Sharpe ratio of d
 * Kan Zhou (2007) "three-fund" model
 * Bayes-stein model
 * Bayes-stein with shortsale constraints model
-<!-- * MacKinlay and Pastor’s (2000) model  -->
+* MacKinlay and Pastor’s (2000) model 
 
 ## Data
 
@@ -35,3 +35,9 @@ This is a tool to test the out-of-sample performance using the Sharpe ratio of d
     * 25 Portfolios Formed on Size and Book-to-Market (5 x 5)
     * 10 Industry Portfolios
     * Fama/French Developed 3 Factors
+    * Country Portfolios formed on B/M, E/P, CE/P, and D/P
+
+* Yahoo Finance
+    * S&P 500 Sector ETFs
+    * S&P 500 Index
+    * 3 Month T-Bill
