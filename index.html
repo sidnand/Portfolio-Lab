@@ -24,21 +24,22 @@
 
     <py-config>
         packages = [
-        "qpsolvers==2.8.1",
-        "pandas",
-        "numpy",
-        "./src/libs/wheels/quadprog-0.1.11-cp310-cp310-emscripten_3_1_27_wasm32.whl",
-        "./src/libs/wheels/portfolioperformance-1.0.0-py3-none-any.whl",
+            "qpsolvers==2.8.1",
+            "pandas",
+            "numpy",
+            "./src/libs/wheels/quadprog-0.1.11-cp310-cp310-emscripten_3_1_27_wasm32.whl",
+            "./src/libs/wheels/portfolioperformance-1.0.0-py3-none-any.whl",
         ]
 
         [[fetch]]
-        files = ["./data/new/processed/spsector.csv",
-        "./data/new/processed/25_portfolios_1_factor.csv",
-        "./data/new/processed/25_portfolios_3_factor.csv",
-        "./data/new/processed/25_portfolios_4_factor.csv",
-        "./data/new/processed/ff_4_factor.csv",
-        "./data/new/processed/industry.csv",
-        "./data/new/processed/international_factor.csv"
+        files = [
+            "./data/new/processed/spsector.csv",
+            "./data/new/processed/25_portfolios_1_factor.csv",
+            "./data/new/processed/25_portfolios_3_factor.csv",
+            "./data/new/processed/25_portfolios_4_factor.csv",
+            "./data/new/processed/ff_4_factor.csv",
+            "./data/new/processed/industry.csv",
+            "./data/new/processed/international_factor.csv"
         ]
     </py-config>
 
@@ -47,7 +48,7 @@
 
 <body>
 
-    <div class="container" style="opacity: 0.2;">
+    <div class="container">
 
         <nav class="navbar navbar-expand-lg">
             <div class="container-fluid">
@@ -107,11 +108,9 @@
 
                     <div>
                         <h5 for="file">Upload</h5>
-                        <button class="btn btn-primary" onclick="openUploadDialogue()">Pick CSV File</button><label
-                            id="filename"></label>
+                        <button class="btn btn-primary" onclick="openUploadDialogue()">Pick CSV File</button><label id="filename"></label>
 
-                        <input style="display: none;" type="file" class="custom-file-input" name="file" id="file"
-                            accept=".csv" onchange="showFileName()" />
+                        <input style="display: none;" type="file" class="custom-file-input" name="file" id="file" accept=".csv" onchange="showFileName()" />
                     </div>
 
                 </fieldset>
@@ -138,24 +137,14 @@
 
                     <div>
                         <label for="">
-                            Date Format
-
-                            <span data-bs-toggle="tooltip" data-bs-html="true" title="
-                                <p>Y: 4 digit year</p>
-                                <p>y: 2 digit year</p>
-                                <p>m: month</p>
-                                <p>d: day</p>">
-                                <i class="fa-solid fa-circle-question" data-bs-toggle="tooltip"
-                                    data-bs-placement="right"></i>
-                            </span>
+                            Date Format &nbsp;&nbsp;&nbsp; Y = 4 digit year, y = 2 digit year, m = month, d = day
                         </label>
                         <input type="text" class="form-control" name="date-format" placeholder="Default: Y-m-d" />
 
-                        <label for="">Risk Factor Asset Position (Multiple Positions; Position 1 is the First
-                            Asset)</label>
+                        <label for="">Risk Factor Asset Position &nbsp;&nbsp;&nbsp; Multiple positions, 1-based index</label>
                         <input type="text" class="form-control" name="risk-factor" placeholder="Default: None" />
 
-                        <label for="">Risk Free Asset Position (Only 1 Position)</label>
+                        <label for="">Risk Free Asset Position</label>
                         <input type="text" class="form-control" name="risk-free" placeholder="Default: 1" />
                     </div>
 
@@ -168,10 +157,10 @@
                     <div>
                         <label for="">Time Horizons</label>
                         <input type="text" class="form-control" name="time-horizons"
-                            placeholder="2 Values Minimum, ex: 60, 120">
+                            placeholder="Increasing Order, ex: 60, 120">
 
-                        <label for="">Gamma Values</label>
-                        <input type="text" class="form-control" name="gammas" id="gammas" placeholder="0 < gamma <= 10">
+                        <label for="">Risk Tolerance Parameter > 0 &nbsp;&nbsp;&nbsp; Multiple values to test</label>
+                        <input type="text" class="form-control" name="gammas" id="gammas">
                     </div>
 
                 </fieldset>
@@ -200,6 +189,13 @@
                     <h5>Select Models</h5>
 
                     <div>
+                        <div class="form-check">
+                            <input type="checkbox" id="toggle-all-models" class="form-check-input" name="toggle-models">
+                            <label for="">All</label>
+                        </div>
+
+                        <br>
+
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" name="model" value="1">
                             <label for="">Minimum-Variance</label>
@@ -261,6 +257,10 @@
         </div> <!-- End of menu -->
 
         <div class="row" id="results">
+            <div id="results-header">
+                <h3>Results</h3>
+                <p>Sharpe Ratio (P-Value)</p>
+            </div>
             <table class="table" id="table_sharpes"></table>
             <table class="table" id="table_signifs" style="margin-top: 50px;"></table>
         </div> <!-- End of results -->
@@ -277,10 +277,6 @@
             let execString = variableName + " = object"
             console.log("Running '" + execString + "'");
             eval(execString)
-        }
-
-        window.onload = () => {
-            loading_screen(false)
         }
     </script>
 

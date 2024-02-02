@@ -1,7 +1,6 @@
 let selectedPreset = ""
 
 let run = (data) => {
-    // convert data to json string
     let dataJson = JSON.stringify(data)
 
     runModel = pyodideGlobals.get('runModel')
@@ -46,8 +45,4 @@ let run = (data) => {
         document.body.style.cursor = 'default';
         return
     }
-}
-
-window.onload = () => {
-    ui_init();
 }

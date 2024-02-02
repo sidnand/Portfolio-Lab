@@ -161,11 +161,6 @@ let validate = (data) => {
             }
         }
 
-        // if (data['timeHorizons'].length < 2) {
-        //     alert("Must have at least 2 time horizons")
-        //     return false
-        // }
-
         // if last element is 0, remove it
         if (data['timeHorizons'][data['timeHorizons'].length - 1] == 0) {
             data['timeHorizons'].pop()
