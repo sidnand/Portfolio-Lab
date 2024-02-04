@@ -1,4 +1,4 @@
-# portfolioperformance GUI
+# Portfolio Lab
 
 This is a GUI for the Python package [portfolioperformance](https://pypi.org/project/portfolioperformance/).
 
