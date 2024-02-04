@@ -1,6 +1,6 @@
 let selectedPreset = ""
 
-let run = (data) => {
+let run = async (data) => {
     let dataJson = JSON.stringify(data)
 
     runModel = pyodideGlobals.get('runModel')
@@ -17,8 +17,6 @@ let run = (data) => {
         data = {}
 
         let data_proxy = res.get('sr')
-
-        console.log(data_proxy)
 
         for (let i = 0; i < data_proxy.length; i++) {
             let name = data_proxy[i][0]
@@ -39,10 +37,8 @@ let run = (data) => {
         }
 
         showResults(gammas, data)
-        document.body.style.cursor = 'default';
     } catch (error) {
         alert("Error running model")
-        document.body.style.cursor = 'default';
         return
     }
 }

@@ -1,7 +1,9 @@
 let tableSharpes = document.getElementById('table_sharpes')
 let tableSignifs = document.getElementById('table_signifs')
 let results_header = document.getElementById('results-header')
+let loader = document.getElementsByClassName('loader')[0]
 let server_url = ""
+is_loading = false
 
 document.addEventListener('DOMContentLoaded', function() {
     if (localStorage.getItem('server_url') !== null) {
@@ -27,6 +29,19 @@ let set_server_url = () => {
     server_url = server_url_input.value
     
     localStorage.setItem('server_url', server_url)
+}
+
+let loading = (x) => {
+    if (x) {
+        loader.style.display = "inline-block"
+        tableSharpes.style.display = "none"
+        results_header.style.display = "none"
+        window.scrollTo(0, document.body.scrollHeight);
+    } else {
+        loader.style.display = "none"
+        tableSharpes.style.display = "block"
+        results_header.style.display = "block"
+    }
 }
 
 let togglePreset = (name) => {
@@ -167,7 +182,7 @@ let showResults = (gammas, data) => {
     tableSharpes.innerHTML = ""
 
     // create header row
-    let headerRow = `<tr><th>Models &darr; | Gammas &rarr;</th>`
+    let headerRow = `<tr><th>Models &darr; | Risk Tolerance &rarr;</th>`
 
     for (let i = 0; i < gammas.length; i++) {
         let gammaHeader = `<th>${gammas[i]}</th>`
@@ -192,13 +207,10 @@ let showResults = (gammas, data) => {
 
         rowSharpe += "</tr>"
 
-        // add data rows to table
         tableSharpes.innerHTML += rowSharpe
     }
 
-    // add button to export table to csv at the bottom of the table
     tableSharpes.innerHTML += `<tr><td><button style="width: 200px" class="btn btn-primary" onclick="tableToCSV('sharpe')">Download</button></td></tr>`
-    results_header.style.display = "block"
 }
 
 let disablePreloadInputs = (x) => {
@@ -210,11 +222,7 @@ let disablePreloadInputs = (x) => {
     
         for (let i = 0; i < inputs.length; i++) {
             let input = inputs[i]
-            // if (input.name != 'gammas' && input.name != 'time-horizons' && input.name != 'model' &&
-            //     input.name != 'date-range-start' && input.name != 'date-range-end' && input.name != 'file' && input.name != 'server_url') {
-            //     input.disabled = true
-            // }
-
+            
             if (input.name == 'delim' || input.name == 'date-format' ||
                 input.name == 'risk-factor' || input.name == 'risk-free') input.disabled = true
         }

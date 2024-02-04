@@ -250,19 +250,20 @@
                 </fieldset>
 
                 <fieldset class="form-group">
-                    <button class="btn btn-primary" onclick="handleFormSubmit()">Run</button>
+                    <button class="btn btn-primary" onclick="loading(true); setTimeout(() => runWithLoading(), 60)">Run</button>
                 </fieldset>
             </form>
 
         </div> <!-- End of menu -->
 
         <div class="row" id="results">
+            <div class="loader"><div></div><div></div><div></div><div></div></div>
+
             <div id="results-header">
                 <h3>Results</h3>
                 <p>Sharpe Ratio (P-Value)</p>
             </div>
             <table class="table" id="table_sharpes"></table>
-            <table class="table" id="table_signifs" style="margin-top: 50px;"></table>
         </div> <!-- End of results -->
 
     </div> <!-- End of container -->
@@ -273,6 +274,12 @@
     <script src="./src/js/main.js"></script>
 
     <script defer>
+        async function runWithLoading() {
+            // loading(true);
+            await handleFormSubmit();
+            loading(false);
+        }
+
         function createObject(object, variableName) {
             let execString = variableName + " = object"
             console.log("Running '" + execString + "'");

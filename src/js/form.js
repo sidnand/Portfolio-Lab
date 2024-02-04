@@ -1,5 +1,4 @@
-let handleFormSubmit = () => {
-    // get the form data
+let handleFormSubmit = async () => {
     let form = document.getElementById('form')
     let file = document.getElementById('file').files[0]
     let delimType = form.elements['delim'].value
@@ -32,12 +31,10 @@ let handleFormSubmit = () => {
     }
 
     if (validate(data)) {
-        document.body.style.cursor = 'wait';
-        
         if (file == undefined) {
             if (server_url == "") {
                 data["selectedPreset"] = selectedPreset
-                run(data)
+                await run(data)
             } else {
                 fetch(server_url + '/' + selectedPreset)
                     .then(response => {
@@ -47,24 +44,26 @@ let handleFormSubmit = () => {
                             throw new Error('Failed to fetch data');
                         }
                     })
-                    .then(json => {
+                    .then(async json => {
                         data["fileData"] = json
-                        run(data)
+                        await run(data)
                     })
                     .catch(error => console.error(error));
             }
         } else {
             let reader = new FileReader()
             reader.readAsText(file, "UTF-8")
-            reader.onload = function (evt) {
+            reader.onload = async function (evt) {
                 fileData = evt.target.result
                 data["fileData"] = fileData
 
-                run(data)
+                await run(data)
             }
         }
 
-    } else return
+    } else {
+        return;
+    }
 }
 
 let validate = (data) => {
