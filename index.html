@@ -264,7 +264,7 @@
                 </fieldset>
 
                 <fieldset class="form-group">
-                    <button class="btn btn-primary" onclick="loading(true); setTimeout(() => runWithLoading(), 60)">Run</button>
+                    <button class="btn btn-primary" onclick="loading(true); setTimeout(() => handleFormSubmit(), 60)">Run</button>
                 </fieldset>
             </form>
 
@@ -297,11 +297,6 @@
                 .catch(error => {
                 console.error('Service Worker registration failed:', error);
                 });
-        }
-
-        async function runWithLoading() {
-            await handleFormSubmit();
-            loading(false);
         }
 
         function createObject(object, variableName) {

@@ -3,7 +3,6 @@ let tableSignifs = document.getElementById('table_signifs')
 let results_header = document.getElementById('results-header')
 let loader = document.getElementsByClassName('loader')[0]
 let server_url = ""
-is_loading = false
 
 document.addEventListener('DOMContentLoaded', function() {
     if (localStorage.getItem('server_url') !== null) {

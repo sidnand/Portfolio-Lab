@@ -34,19 +34,20 @@ let handleFormSubmit = async () => {
         if (file == undefined) {
             if (server_url == "") {
                 data["selectedPreset"] = selectedPreset
-                await run(data)
+                await run(data);
+                loading(false);
             } else {
                 fetch(server_url + '/' + selectedPreset)
-                    .then(response => {
+                    .then(async response => {
                         if (response.status === 200) {
-                            return response.json();
+                            const jsonData = await response.json();
+
+                            data["fileData"] = jsonData;
+                            await run(data);
+                            loading(false);
                         } else {
                             throw new Error('Failed to fetch data');
                         }
-                    })
-                    .then(async json => {
-                        data["fileData"] = json
-                        await run(data)
                     })
                     .catch(error => console.error(error));
             }
@@ -57,12 +58,11 @@ let handleFormSubmit = async () => {
                 fileData = evt.target.result
                 data["fileData"] = fileData
 
-                await run(data)
+                await run(data);
+                loading(false);
             }
         }
 
-    } else {
-        return;
     }
 }
 
