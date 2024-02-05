@@ -2,7 +2,7 @@
     "name": "Portfolio Lab",
     "short_name": "Portfolio Lab",
     "description": "Compare the prediction performance of portfolio optimization models",
-    "start_url": "/",
+    "start_url": "/Portfolio-Lab/",
     "display": "standalone",
     "background_color": "#ffffff",
     "icons": [
