@@ -11,6 +11,16 @@
     background-color: #fff59d;
 }
 
+py-config {
+  display: none;
+}
+
+py-splashscreen {
+  position: relative;
+  text-align: center;
+  top: 30em;
+}
+
 #results-header {
     margin: 20px;
     display: none;
@@ -41,13 +51,22 @@ caption {
 }
 
 .loader {
-    display: none;
     position: relative;
-    width: 80px;
-    height: 80px;
-    left: 50%;
-    top: 80px;
+    width: 5%;
+    height: 5%;
+    left: 46.5%;
   }
+
+  .results-loader {
+    top: 80px;
+    display: none;
+  }
+
+  .init-loader {
+    display: block;
+    top: 25em;
+  }
+
   .loader div {
     position: absolute;
     left: 33px;

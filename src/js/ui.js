@@ -1,7 +1,7 @@
 let tableSharpes = document.getElementById('table_sharpes')
 let tableSignifs = document.getElementById('table_signifs')
 let results_header = document.getElementById('results-header')
-let loader = document.getElementsByClassName('loader')[0]
+let loader = document.getElementsByClassName('results-loader')[0]
 let server_url = ""
 
 document.addEventListener('DOMContentLoaded', function() {
