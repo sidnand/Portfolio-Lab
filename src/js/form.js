@@ -63,6 +63,10 @@ let handleFormSubmit = async () => {
             }
         }
 
+    } else {
+        loader.style.display = "none"
+        tableSharpes.style.display = "none"
+        results_header.style.display = "none"
     }
 }
 
